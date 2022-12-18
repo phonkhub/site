@@ -1,0 +1,8 @@
+{% extends "base.html" %} {% block content %}
+<ul>
+    {% for country in countries %} {% if let Some(line) =
+    site::make_country(country, artists) %}
+    <a href="./{{ country.code }}.html"><li>{{ line }}</li></a>
+    {% endif %} {% endfor %}
+</ul>
+{% endblock %}

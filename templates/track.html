@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+<img height="200px" src="{{ album.cover }}" />
+
+<h1>{{ album.name }} / {{ track.name }}</h1>
+
+{% if let Some(wave) = track.wave %}
+
+<canvas id="wave" width="1800" height="128"></canvas>
+
+<script>
+    let canvas = document.getElementById("wave");
+    let ctx = canvas.getContext("2d");
+    let wave = [{{ site::wave_to_str(wave) }}];
+
+    ctx.strokeStyle = "white";
+
+    for (let i = 0; i < 1800; i++) {
+
+
+        ctx.beginPath();
+        ctx.moveTo(i, 128);
+        ctx.lineTo(i, 128 - wave[i] / 2);
+        ctx.stroke();
+    }
+</script>
+
+{% endif %} {% endblock %}

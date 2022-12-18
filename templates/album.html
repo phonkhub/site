@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+<img height="200px" src="{{ album.cover }}" />
+
+<h1>{{ album.name }}</h1>
+
+<ol>
+    {% for i in (0..album.track_count) %}
+    <li>
+        {% if let Some(track) = album.tracks.get((i + 1).to_string().as_str())
+        %}
+        <a href="./{{ site::parse_name(track.name) }}.html">{{ track.name }}</a>
+
+        {% else %} no data {% endif %}
+    </li>
+    {% endfor %}
+</ol>
+{% endblock %}

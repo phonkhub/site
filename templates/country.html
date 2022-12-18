@@ -1,0 +1,8 @@
+{% extends "base.html" %} {% block content %}
+<h1>{{ country.name }} {{ country.emoji }}</h1>
+<ul>
+    {% for artist in artists %}
+    <li><a href="../artists/{{ artist.path }}">{{ artist.data.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
