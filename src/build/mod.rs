@@ -5,9 +5,11 @@ use crate::yaml::Data;
 
 use self::artists::build_artists;
 use self::artist::build_artist;
+use self::countries::build_countries;
 
 mod artists;
 mod artist;
+mod countries;
 
 pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     let path_artists = path.to_owned() + "artists/";
@@ -16,10 +18,15 @@ pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     for id_artist in data.artists.keys() {
         build_artist(&path_artists, &data, id_artist)?;
     }
+
+    let path_countries = path.to_owned() + "countries/";
+    create_dir_all(&path_countries)?;
+    build_countries(&path_countries, &data)?;
     Ok(())
 }
 
 pub fn template_write(content: &str, path: &str) -> Result<(), Error> {
-    write(path, content)
+    write(path, content).expect(&("Could not write at: ".to_owned() + path));
+    Ok(())
 }
 

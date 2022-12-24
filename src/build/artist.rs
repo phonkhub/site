@@ -21,6 +21,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
     let country = if let Some(code) = &artist.country_code {
         data.countries.get(code)
     } else { None };
+
     let template = TemplateArtists {
         artist,
         country,

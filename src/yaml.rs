@@ -2,7 +2,7 @@ use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
 use crate::types::music::{Artist, CollectiveMember, Album};
-use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap};
+use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap, hash::Hash};
 
 #[derive(Debug)]
 pub struct Data {
@@ -28,6 +28,18 @@ impl Data {
             .filter(|album| album.artist_id == id)
             .map(|album| album.to_owned())
             .collect()
+    }
+
+    pub fn get_artists_by_country(&self) -> HashMap<String, Vec<Artist>> {
+        let mut result = HashMap::new();
+        for (_, artist) in &self.artists {
+            if let Some(code) = &artist.country_code {
+                if let None = result.get(code) { result.insert(code.clone(), vec![]); }
+                let artists = result.get_mut(code).unwrap();
+                artists.push(artist.clone())
+            }
+        }
+        result
     }
 }
 

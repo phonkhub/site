@@ -10,19 +10,7 @@ const PATH_OUT: &str = "./out/";
 
 
 
-// #[derive(Template)]
-// #[template(path = "countries.html")]
-// struct TemplateCountries {
-//     countries: Vec<Country>,
-//     artists: HashMap<String, Vec<Artist>>,
-// }
 
-// #[derive(Template)]
-// #[template(path = "country.html")]
-// struct TemplateCountry {
-//     country: Country,
-//     artists: Vec<Artist>,
-// }
 
 // #[derive(Template)]
 // #[template(path = "artist.html")]
