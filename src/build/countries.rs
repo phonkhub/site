@@ -35,7 +35,7 @@ struct TemplateCountry<'a> {
     artists: &'a Vec<Artist>,
 }
 
-fn build_country(path: &str, data: &Data, country: &Country, artists: &Vec<Artist>) -> Result<(), Error>{
+fn build_country(path: &str, _: &Data, country: &Country, artists: &Vec<Artist>) -> Result<(), Error>{
     let path = path.to_owned() + &country.code + ".html";
     let template = TemplateCountry { country, artists };
     let content = template.render().unwrap();

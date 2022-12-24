@@ -2,7 +2,7 @@ use std::io::Error;
 
 use askama::Template;
 
-use crate::{types::music::Artist, yaml::{Data, Country}};
+use crate::{types::music::{Artist, Album, Track}, yaml::{Data, Country, Features}};
 
 use super::template_write;
 
@@ -12,6 +12,8 @@ use super::template_write;
 struct TemplateArtists<'a> {
     artist: &'a Artist,
     country: Option<&'a Country>,
+    albums: Vec<Album>,
+    features: Features,
 }
 
 pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Error> {
@@ -22,9 +24,16 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
         data.countries.get(code)
     } else { None };
 
+    let albums = data.get_albums_by(id_artist);
+    let features = data.get_features_by(id_artist);
+    println!("{:?}", features);
+
+
     let template = TemplateArtists {
         artist,
         country,
+        albums,
+        features,
     };
     let content = template.render().unwrap();
     template_write(&content, &path)

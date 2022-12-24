@@ -9,4 +9,23 @@
 </p>
 {% endif %} {% if let Some(description) = artist.description %}
 <p>{{ description }}</p>
-{% endif %} {% endblock %}
+{% endif %}
+<h2>Discography</h2>
+<ul>
+    {% for album in albums %}
+    <li>
+        <a href="./{{ album.id }}"
+            ><img height="100px" src="{{album.cover_url}}" />{{ album.name }}</a
+        >
+    </li>
+    {% endfor %}
+</ul>
+<h2>Featured on</h2>
+<ul>
+    {% for (album_id, tracks) in features %}
+
+    <li>{{ album_id }}</li>
+
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,15 +1,18 @@
 use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
-use crate::types::music::{Artist, CollectiveMember, Album};
+use crate::types::music::{Artist, CollectiveMember, Album, Track};
 use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap, hash::Hash};
 
 #[derive(Debug)]
 pub struct Data {
     pub artists: HashMap<String, Artist>,
     pub albums: HashMap<String, Album>,
+    pub tracks: HashMap<String, Track>,
     pub countries: HashMap<String, Country>,
 }
+
+pub type Features = HashMap<String, Vec<Track>>;
 
 impl Data {
     fn new() -> Data {
@@ -17,6 +20,7 @@ impl Data {
         Data {
             artists: HashMap::new(),
             albums: HashMap::new(),
+            tracks: HashMap::new(),
             countries,
         }
     }
@@ -37,6 +41,25 @@ impl Data {
                 if let None = result.get(code) { result.insert(code.clone(), vec![]); }
                 let artists = result.get_mut(code).unwrap();
                 artists.push(artist.clone())
+            }
+        }
+        result
+    }
+
+    pub fn get_features_by(&self, id_artist: &str) -> Features {
+        let mut result = HashMap::new();
+        let has_feature = |track: &Track| track.artists
+            .iter()
+            .any(|artist| artist.id.is_some() && artist.id.as_ref().unwrap() == id_artist);
+
+        for (id, track) in &self.tracks {
+
+            if has_feature(track) {
+                if let None = result.get(&track.album_id) {
+                    result.insert(track.album_id.clone(), vec![]);
+                }
+                let album_tracks = result.get_mut(&track.album_id).unwrap();
+                album_tracks.push(track.clone());
             }
         }
         result
