@@ -2,7 +2,7 @@
 <h1>Artists</h1>
 <ul>
     {% for artist in artists %}
-    <li><a href="./{{ artist.path }}">{{ artist.data.name }}</a></li>
+    <li><a href="./{{ artist.id }}">{{ artist.name }}</a></li>
     {% endfor %}
 </ul>
 {% endblock %}
