@@ -2,7 +2,7 @@ use std::{io::{Error, ErrorKind}, fs::{read_dir, write, DirEntry, create_dir_all
 use chrono::{format::format, NaiveDate};
 use serde::Deserialize;
 // use site::types::music::{Album, Track, Location, get_countries, Country, Countries, Artist, Data, Artists, ArtistEntry, AlbumEntry, ArtistData, ArtistsByCountry, countries_to_hashmap, Features, TrackEntry};
-use site::{yaml::{read_data, Data}, types::music::{Artist}, build::build};
+use site::{yaml::{read_data, Data}, types::music::{Artist}};
 use askama::Template;
 
 const PATH_DB: &str = "./db/";
@@ -24,6 +24,14 @@ const PATH_OUT: &str = "./out/";
 //     artists: Vec<Artist>,
 // }
 
+// #[derive(Template)]
+// #[template(path = "artist.html")]
+// struct TemplateArtist<'a> {
+//     artist: Artist,
+//     albums: Vec<AlbumEntry>,
+//     country: Option<&'a Country>,
+//     features: Option<&'a Vec<TrackEntry>>,
+// }
 
 // #[derive(Template)]
 // #[template(path = "album.html")]
@@ -40,10 +48,29 @@ const PATH_OUT: &str = "./out/";
 
 
 
-fn main() -> Result<(), Error> { 
+fn main() -> Result<(), Error> { build() }
+
+/// Builds the website.
+fn build() -> Result<(), Error> {
     let data = read_data(PATH_DB).unwrap();
-    build(PATH_OUT, &data)
- }
+    
+
+    for (id, artist) in &data.artists {
+        println!("Artist: {} ({:?})", id.clone(), artist.name);
+        let albums = data.get_albums_by(&id);
+        for alb in albums {
+            println!("{}", alb.name);
+        }
+        println!("");
+        println!("");
+
+
+    }
+
+    Ok(())
+}
+
+
 
 // fn get_data() -> Result<Data, Error>{
 //     let mut features = HashMap::new();

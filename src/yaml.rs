@@ -160,7 +160,7 @@ fn get_artist(path: &str, data: &mut Data, artist_id: &str) -> Result<Artist, Er
     let artist = Artist {
         id: artist_id.to_owned(),
         name: yaml.name,
-        image_url: Some(yaml.image),
+        image_url: yaml.image,
         country_code: yaml.country,
         description: yaml.description,
         collective_members: colletive_members,

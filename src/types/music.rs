@@ -4,7 +4,7 @@ use chrono::{NaiveDate, Duration};
 pub struct Artist {
     pub id: String,
     pub name: String,
-    pub image_url: Option<String>,
+    pub image_url: String,
     pub country_code: Option<String>,
     pub description: Option<String>,
     pub collective_members: Option<Vec<CollectiveMember>>,
