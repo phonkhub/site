@@ -100,12 +100,6 @@ impl<'de> Deserialize<'de> for Wave {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
-pub struct Country {
-    pub name: String,
-    pub code: String,
-    pub emoji: String,
-}
 
 pub type Countries = HashMap<String, Country>;
 
@@ -137,11 +131,6 @@ pub fn wave_to_str(wave: &Wave) -> String {
     strs.join(",")
 }
 
-pub fn get_countries() -> Result<Vec<Country>, Error> {
-    let file = std::fs::File::open("./lib/countries.json")?;
-    let countries: Vec<Country> = serde_json::from_reader(file).unwrap();
-    Ok(countries)
-}
 
 pub fn countries_to_hashmap(countries: &Vec<Country>) -> Countries {
     let mut result = HashMap::new();

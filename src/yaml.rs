@@ -8,12 +8,16 @@ use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap};
 pub struct Data {
     pub artists: HashMap<String, Artist>,
     pub albums: HashMap<String, Album>,
+    pub countries: HashMap<String, Country>,
 }
+
 impl Data {
     fn new() -> Data {
+        let countries = get_countries().unwrap();
         Data {
             artists: HashMap::new(),
-            albums: HashMap::new()
+            albums: HashMap::new(),
+            countries,
         }
     }
 
@@ -203,6 +207,23 @@ fn get_album_data(path: &str) -> Result<YamlAlbum, Error> {
     let file = std::fs::File::open(&path).expect(&format!("No file: {}", path));
     let data: YamlAlbum = serde_yaml::from_reader(file).expect(&format!("Err reading: {}", path));
     Ok(data)
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Country {
+    pub name: String,
+    pub code: String,
+    pub emoji: String,
+}
+
+pub fn get_countries() -> Result<HashMap<String, Country>, Error> {
+    let file = std::fs::File::open("./lib/countries.json")?;
+    let countries: Vec<Country> = serde_json::from_reader(file).unwrap();
+    let mut result = HashMap::new();
+    for country in countries {
+        result.insert(country.code.clone(), country);
+    }
+    Ok(result)
 }
 
 // /// Create an artist entry from an artist dir.

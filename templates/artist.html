@@ -1,4 +1,12 @@
 {% extends "base.html" %} {% block content %}
 <img height="150px" src="{{ artist.image_url }}" />
 <h1>{{ artist.name }}</h1>
-{% endblock %}
+{% if let Some(country) = country %}
+<p>
+    <a href="../../countries/{{ country.code }}.html"
+        >{{ country.name }} {{ country.emoji }}</a
+    >
+</p>
+{% endif %} {% if let Some(description) = artist.description %}
+<p>{{ description }}</p>
+{% endif %} {% endblock %}
