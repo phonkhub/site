@@ -1,3 +1,6 @@
+use std::hash;
+use md5;
+
 pub mod types;
 pub mod yaml;
 pub mod build;
@@ -20,4 +23,19 @@ pub fn parse_name(name: &str) -> String {
         .replace(" & ", " and ")
         .replace(is_special, "")
         .replace(is_space, "-")
+}
+
+type Color = (u8, u8, u8);
+
+pub fn id_to_color(id: &str) -> Color {
+    let r;
+    let g;
+    let b;
+
+    let hash = md5::compute(id);
+    r = hash[0];
+    g = hash[1];
+    b = hash[2];
+
+    (r, g, b)
 }

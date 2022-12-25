@@ -6,7 +6,7 @@
 {% extends "base.html" %} {% block content %}
 <a href="../"><- back</a><br /><br /><br />
 <img height="150px" src="{{ artist.image_url }}" />
-<h1>{{ artist.name }}</h1>
+<h1 style="color: {{ color }};">{{ artist.name }}</h1>
 {% if let Some(country) = country %}
 <p>
     <a href="../../countries/{{ country.code }}.html"

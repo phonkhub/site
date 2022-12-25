@@ -2,7 +2,7 @@ use std::{io::Error, sync::Arc, collections::HashMap};
 
 use askama::Template;
 
-use crate::{types::music::{Artist, Album, Track}, yaml::{Data, Country, Features}};
+use crate::{types::music::{Artist, Album, Track}, yaml::{Data, Country, Features}, Color, id_to_color};
 
 use super::template_write;
 
@@ -16,6 +16,7 @@ struct TemplateArtists<'a> {
     albums: Vec<Album>,
     features: Features,
     collectives: Vec<String>,
+    color: String,
 }
 
 pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Error> {
@@ -37,6 +38,8 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
 
     let collectives = data.get_collectives(id_artist);
 
+    let (r, g, b) = id_to_color(id_artist);
+    // let color = id_to_color(id_artist)
     let template = TemplateArtists {
         data,
         artist,
@@ -44,6 +47,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
         albums,
         features,
         collectives,
+        color: format!("#{:x?}{:x?}{:x?}", r, g, b)
     };
     let content = template.render().unwrap();
     template_write(&content, &path)
