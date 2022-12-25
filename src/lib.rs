@@ -25,7 +25,15 @@ pub fn parse_name(name: &str) -> String {
         .replace(is_space, "-")
 }
 
-type Color = (u8, u8, u8);
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+impl Color {
+    fn hex(&self) -> String { format!("#{:02x?}{:02x?}{:02x?}", self.r, self.g, self.b) }
+}
 
 pub fn id_to_color(id: &str) -> Color {
     let r;
@@ -37,5 +45,5 @@ pub fn id_to_color(id: &str) -> Color {
     g = hash[1];
     b = hash[2];
 
-    (r, g, b)
+    Color {r, g, b}
 }

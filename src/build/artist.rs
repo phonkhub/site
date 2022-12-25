@@ -38,8 +38,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
 
     let collectives = data.get_collectives(id_artist);
 
-    let (r, g, b) = id_to_color(id_artist);
-    // let color = id_to_color(id_artist)
+    let color = id_to_color(id_artist).hex();
     let template = TemplateArtists {
         data,
         artist,
@@ -47,7 +46,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
         albums,
         features,
         collectives,
-        color: format!("#{:x?}{:x?}{:x?}", r, g, b)
+        color,
     };
     let content = template.render().unwrap();
     template_write(&content, &path)

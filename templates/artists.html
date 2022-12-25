@@ -2,7 +2,13 @@
 <h1>Artists</h1>
 <ul>
     {% for artist in artists %}
-    <li><a href="./{{ artist.id }}">{{ artist.name }}</a></li>
+    <li>
+        <a
+            style="color: {{ crate::id_to_color(artist.id).hex() }}"
+            href="./{{ artist.id }}"
+            >{{ artist.name }}</a
+        >
+    </li>
     {% endfor %}
 </ul>
 {% endblock %}
