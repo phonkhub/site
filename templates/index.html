@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block content %}
+
+<div style="text-align: center">
+    <h1>Welcome to PhonkHub</h1>
+
+    <p>
+        {{ data.artists.len() }} artists, {{ data.albums.len() }} albums, and {{
+        data.tracks.len() }} tracks.
+    </p>
+</div>
+
+{% endblock %}
