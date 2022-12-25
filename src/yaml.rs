@@ -2,7 +2,7 @@ use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
 use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location}, parse_name};
-use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap, hash::Hash, mem};
+use std::{io::Error, fs::{read_dir, DirEntry}, collections::{HashMap, HashSet}, hash::Hash, mem};
 
 #[derive(Debug)]
 pub struct Data {
@@ -79,6 +79,23 @@ impl Data {
             .filter(|artist| is_member(&artist))
             .map(|artist| artist.id.to_owned())
             .collect()
+    }
+
+    pub fn get_album_artist_ids(&self, id_album: &str) -> Vec<String> {
+        self.tracks
+            .values()
+            .filter(|track| track.album_id == id_album)
+            .flat_map(
+                |track|
+                    track.artists
+                        .iter()
+                        .map(|artist| artist.id.clone())
+                )
+            
+            .collect::<HashSet<String>>()
+            .iter()
+            .map(|id| id.to_owned())
+            .collect::<Vec<String>>()
     }
 }
 

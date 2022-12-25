@@ -29,14 +29,14 @@
     <li>{% call album_macros::album(album.id) %}</li>
     {% endfor %}
 </ul>
+{% if !features.is_empty() %}
 <h2>Featured on</h2>
 <ul>
     {% for (album_id, tracks) in features %}
     <li>{% call album_macros::album(album_id) %}</li>
     {% endfor %}
 </ul>
-
-{% if let Some(members) = artist.collective_members %}
+{% endif %} {% if let Some(members) = artist.collective_members %}
 <h2>Collectives</h2>
 {% for member in members %}
 <ul>
