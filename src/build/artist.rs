@@ -1,4 +1,4 @@
-use std::{io::Error, sync::Arc, collections::HashMap};
+use std::{io::Error, sync::Arc, collections::HashMap, fs::create_dir_all};
 
 use askama::Template;
 
@@ -21,7 +21,9 @@ struct TemplateArtists<'a> {
 }
 
 pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Error> {
-    let path = path.to_owned() + id_artist + "/index.html";
+    let path_artist = path.to_owned() + &id_artist;
+    create_dir_all(&path_artist)?;
+    let path = path_artist.to_owned() + "/index.html";
     let artist = data.artists.get(id_artist).unwrap();
     
     let country = if let Some(code) = &artist.country_code {
