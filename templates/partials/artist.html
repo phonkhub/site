@@ -1,0 +1,15 @@
+{%- macro artist(id_artist) -%} {% if let Some(artist) =
+data.get_artist(id_artist) %}
+
+<a href="{{ url_root }}artists/{{ id_artist }}">
+    <h1>{{ artist.name }}</h1>
+    <img height="100px" src="{{ artist.image_url }}" />
+</a>
+
+{% else %}
+
+<div>
+    <h1>{{ id_artist }}</h1>
+</div>
+
+{% endif %} {%- endmacro -%}

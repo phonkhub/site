@@ -13,7 +13,7 @@ pub struct Artist {
 
 #[derive(Debug, Clone)]
 pub struct CollectiveMember {
-    pub name: String,
+    pub id: String,
     pub joined: Option<NaiveDate>,
     pub left: Option<NaiveDate>,
 }
@@ -33,25 +33,25 @@ pub struct Album {
 pub struct Track {
     pub id: String,
     pub name: String,
+    pub artist_id: String,
     pub album_id: String,
-    pub duration: i8,
+    pub duration: Option<Duration>,
     pub artists: Vec<TrackArtist>,
     pub locations: Vec<Location>,
     pub samples: Vec<Sample>,
-    pub wave: Wave,
+    pub wave: Option<Wave>,
 }
 
 #[derive(Debug, Clone)]
 pub struct TrackArtist {
-    pub id: Option<String>,
-    pub name: Option<String>,
-    pub credit_for: Option<String>,
+    pub id: String,
+    pub r#for: Option<String>,
 }
 
 #[derive(Debug, Clone)]
 pub struct Location {
-    url: String,
-    at: Duration,
+    pub url: String,
+    pub at: Option<Duration>,
 }
 
 #[derive(Debug, Clone)]

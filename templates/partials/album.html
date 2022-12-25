@@ -1,0 +1,8 @@
+{%- macro album(album_id) -%} {% let album = data.get_album(album_id) %}
+
+<a href="{{ url_root }}artists/{{ album.artist_id }}/{{ album.id }}/">
+    <h1>{{ album.name }}</h1>
+    <img height="100px" src="{{ album.cover_url }}" />
+</a>
+
+{%- endmacro -%}

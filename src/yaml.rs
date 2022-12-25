@@ -1,8 +1,8 @@
 use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
-use crate::types::music::{Artist, CollectiveMember, Album, Track};
-use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap, hash::Hash};
+use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location}, parse_name};
+use std::{io::Error, fs::{read_dir, DirEntry}, collections::HashMap, hash::Hash, mem};
 
 #[derive(Debug)]
 pub struct Data {
@@ -23,6 +23,14 @@ impl Data {
             tracks: HashMap::new(),
             countries,
         }
+    }
+
+    pub fn get_album(&self, id: &str) -> Album {
+        self.albums.get(id).unwrap().clone()
+    }
+
+    pub fn get_artist(&self, id: &str) -> Option<Artist> {
+        if let Some(artist) = self.artists.get(id) { Some(artist.clone()) } else { None }
     }
 
     pub fn get_albums_by(&self, id: &str) -> Vec<Album> {
@@ -46,23 +54,31 @@ impl Data {
         result
     }
 
-    pub fn get_features_by(&self, id_artist: &str) -> Features {
+    pub fn get_tracks_by(&self, id_artist: &str) -> Features {
         let mut result = HashMap::new();
         let has_feature = |track: &Track| track.artists
             .iter()
-            .any(|artist| artist.id.is_some() && artist.id.as_ref().unwrap() == id_artist);
+            .any(|artist| artist.id == id_artist);
 
         for (id, track) in &self.tracks {
+            if !has_feature(track) { continue; }
 
-            if has_feature(track) {
-                if let None = result.get(&track.album_id) {
-                    result.insert(track.album_id.clone(), vec![]);
-                }
-                let album_tracks = result.get_mut(&track.album_id).unwrap();
-                album_tracks.push(track.clone());
-            }
+            if let None = result.get(&track.album_id) { result.insert(track.album_id.clone(), vec![]); }
+            let album_tracks = result.get_mut(&track.album_id).unwrap();
+            album_tracks.push(track.clone());
         }
         result
+    }
+
+    /// Return every artist with the given id as a member.
+    pub fn get_collectives(&self, id_artist: &str) -> Vec<String> {
+        let is_member = |collective: &Artist| collective.collective_members.as_ref().unwrap().iter().any(|member| member.id == id_artist);
+        self.artists
+            .values()
+            .filter(|artist| artist.collective_members.is_some())
+            .filter(|artist| is_member(&artist))
+            .map(|artist| artist.id.to_owned())
+            .collect()
     }
 }
 
@@ -101,13 +117,19 @@ struct YamlAlbum {
 pub struct YamlTrack {
     pub name: String,
     pub duration: Option<String>,
-    pub artists: Option<Vec<String>>,
+    pub artists: Option<Vec<YamlTrackArtist>>,
     pub remix: Option<String>,
     pub artist_cover: Option<String>,
     pub location: Vec<YamlLocation>,
     pub sample: Option<Vec<Sample>>,
     pub lyrics: Option<String>,
     pub wave: Option<Wave>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct YamlTrackArtist {
+    pub id: String,
+    pub r#for: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -162,21 +184,28 @@ impl<'de> Deserialize<'de> for Wave {
     }
 }
 
+#[derive(Debug, Deserialize, Clone)]
+pub struct Country {
+    pub name: String,
+    pub code: String,
+    pub emoji: String,
+}
+
 pub fn read_data(path: &str) -> Result<Data, Error> {
     let mut data = Data::new();
-    get_artists(path, &mut data)?;
+    read_artists(path, &mut data)?;
     // let artists = get_artists(path, &mut data)?;
     Ok(data)
 }
 
 // Reads the git submodule and returns it as a Data type.
-fn get_artists(path: &str, data: &mut Data) -> Result<(), Error>{
+fn read_artists(path: &str, data: &mut Data) -> Result<(), Error>{
     let path_artists = path.to_owned() + "artists/";
     let artists = read_dir(&path_artists)?;
     for entry in artists {
         let artist_id = entry.unwrap().file_name().into_string().unwrap();
         let path = path_artists.to_owned() + &artist_id;
-        let artist = get_artist(&path, data, &artist_id)?;
+        let artist = read_artist(&path, data, &artist_id)?;
         data.artists.insert(artist_id.clone(), artist);
 
         read_albums(&path, data, &artist_id)?
@@ -184,12 +213,12 @@ fn get_artists(path: &str, data: &mut Data) -> Result<(), Error>{
     Ok(())
 }
 
-fn get_artist(path: &str, data: &mut Data, artist_id: &str) -> Result<Artist, Error> {
+fn read_artist(path: &str, data: &mut Data, artist_id: &str) -> Result<Artist, Error> {
     let yaml = get_artist_data(path)?;
     let colletive_members = if let Some(members) = yaml.collective_members {
         let yaml_to_member = |member: &YamlCollectiveMember| 
             CollectiveMember {
-            name: member.name.to_owned(),
+            id: member.name.to_owned(),
             joined: member.joined,
             left: member.left,
         };
@@ -233,7 +262,11 @@ fn read_albums(path: &str, data: &mut Data, id_artist: &str) -> Result<(), Error
             cover_url: yaml.cover,
             track_count: yaml.track_count,
         };
-        data.albums.insert(id_album.to_owned(), album);
+        data.albums.insert(id_album.to_owned(), album.clone());
+
+        for (position, track) in &yaml.tracks {
+            read_track(data, id_album, &album, position, track)?;
+        }
     }
     Ok(())
 }
@@ -244,11 +277,50 @@ fn get_album_data(path: &str) -> Result<YamlAlbum, Error> {
     Ok(data)
 }
 
-#[derive(Debug, Deserialize, Clone)]
-pub struct Country {
-    pub name: String,
-    pub code: String,
-    pub emoji: String,
+fn read_track(data: &mut Data, album_id: &str, album: &Album, position: &str, yaml: &YamlTrack) -> Result<(), Error> {
+    let name = &yaml.name;
+    let id_track = parse_name(name);
+    let artists = if let Some(artists) = &yaml.artists {
+        artists.iter().map(|artist| TrackArtist {
+            id: artist.id.to_owned(),
+            r#for: artist.r#for.to_owned(),
+        }).collect()
+    } else {
+        vec![
+            TrackArtist {
+                id: album.artist_id.to_owned(),
+                r#for: None,
+            }
+        ]
+    };
+    let locations = yaml.location.iter().map(|location| {
+        let url = location.url.to_owned();
+        let at = if let Some(time) = &location.at { Some(time_to_duration(&time)) } else { None };
+        Location { url, at, } 
+    }).collect();
+    let duration = if let Some(time) = &yaml.duration { Some(time_to_duration(time)) } else {
+        None
+    };
+
+    let track = Track {
+        id: id_track.clone(),
+        name: name.to_owned(),
+        artist_id: album.artist_id.to_owned(),
+        album_id: album_id.to_owned(),
+        duration,
+        artists,
+        locations,
+        samples: vec![], // TODO: implement me
+        wave: None, // TODO: implement me
+    };
+
+    data.tracks.insert(id_track, track);
+    
+    Ok(())
+}
+
+pub fn time_to_duration(time: &str) -> Duration {
+    Duration::seconds(0)
 }
 
 pub fn get_countries() -> Result<HashMap<String, Country>, Error> {
@@ -260,6 +332,7 @@ pub fn get_countries() -> Result<HashMap<String, Country>, Error> {
     }
     Ok(result)
 }
+
 
 // /// Create an artist entry from an artist dir.
 // fn get_artist(features: &mut Features, dir_artist: DirEntry) -> Result<YamlArtist, Error> {

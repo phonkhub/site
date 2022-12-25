@@ -1,3 +1,4 @@
+{% let url_root = "http://localhost:5500/out/" %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,6 +10,13 @@
     <style>
         #header {
             text-align: center;
+        }
+        @font-face {
+            font-family: myFirstFont;
+            src: url("{{ url_root }}phont.otf");
+        }
+        body {
+            font-family: myFirstFont;
         }
     </style>
     <body>
