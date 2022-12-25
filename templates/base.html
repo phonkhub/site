@@ -1,4 +1,6 @@
-{% let url_root = "http://localhost:5500/out/" %}
+{% let url_root %} {% if cfg!(debug_assertions) %} {% let url_root =
+"http://localhost:5500/out/" %} {% else %} {% let url_root =
+"https://phonkhub.com/" %} {% endif %}
 <!DOCTYPE html>
 <html lang="en">
     <head>

@@ -22,7 +22,7 @@ jobs:
                   override: true
 
             - name: Build
-              run: make
+              run: make prod
 
             - name: Add CNAME
               run: echo phonkhub.com>out/CNAME
