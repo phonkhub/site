@@ -1,47 +1,45 @@
-{% extends "base.html" %} {% block content %}
-<img height="150px" src="{{ artist.data.image }}" />
-<h1>{{ artist.data.name }}</h1>
+{%- import "partials/album.html" as album_macros -%} {%- import
+"partials/artist.html" as artist_macros -%}
 
+<br />
+
+{% extends "base.html" %} {% block content %}
+<a href="../"><- back</a><br /><br /><br />
+<img height="150px" src="{{ artist.image_url }}" />
+<h1 style="color: {{ color }};">{{ artist.name }}</h1>
 {% if let Some(country) = country %}
 <p>
     <a href="../../countries/{{ country.code }}.html"
         >{{ country.name }} {{ country.emoji }}</a
     >
 </p>
-{% endif %} {% if let Some(description) = artist.data.description %}
+{% endif %} {% if let Some(description) = artist.description %}
 <p>{{ description }}</p>
-{% endif %}
+{% endif %} {% if !collectives.is_empty() %}
+<h2>Collectives</h2>
+{% for collective_id in collectives %}
+<ul>
+    <li>{% call artist_macros::artist(collective_id) %}</li>
+</ul>
+{% endfor %} {% endif %}
+
 <h2>Discography</h2>
 <ul>
-    {% for (path, album) in albums %}
-    <li>
-        <a href="./{{ path }}"
-            ><img height="100px" src="{{album.cover}}" />{{ album.name }}</a
-        >
-    </li>
+    {% for album in albums %}
+    <li>{% call album_macros::album(album.id) %}</li>
     {% endfor %}
 </ul>
-{% if let Some(tracks) = features %}
+{% if !features.is_empty() %}
 <h2>Featured on</h2>
 <ul>
-    {% for (path_album, album, path_track, track) in tracks %}
-
-    <li>
-        <a
-            href="../{{ site::parse_name(album.artist) }}/{{ path_album }}/{{ path_track }}"
-            >{{ track.name }}</a
-        >
-    </li>
-
+    {% for (album_id, tracks) in features %}
+    <li>{% call album_macros::album(album_id) %}</li>
     {% endfor %}
 </ul>
-{% endif %} {% if let Some(members) = artist.data.collective_members %}
-<h1>Collective Members</h1>
+{% endif %} {% if let Some(members) = artist.collective_members %}
+<h2>Collectives</h2>
+{% for member in members %}
 <ul>
-    {% for member in members %}
-    <li>
-        <a href="../{{ site::parse_name(member.name) }}">{{ member.name }}</a>
-    </li>
-    {% endfor %}
+    <li>{% call artist_macros::artist(member.id) %}</li>
 </ul>
-{% endif %} {% endblock %}
+{% endfor %} {% endif %} {% endblock %}

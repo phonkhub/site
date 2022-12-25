@@ -1,132 +1,9 @@
-use std::{collections::HashMap, io::Error};
+use std::hash;
+use md5;
 
-use chrono::NaiveDate;
-use serde::{Deserialize, de::Visitor};
-
-pub struct Data {
-    pub artists: Artists,
-    pub countries: Vec<Country>,
-    pub countries_hash: Countries,
-    pub features: Features,
-}
-
-
-pub type Artists = Vec<ArtistEntry>;
-pub type ArtistEntry = (Artist, Vec<AlbumEntry>);
-pub type AlbumEntry = (String, Album);
-pub type TrackEntry = (String, Album, String, Track);
-
-#[derive(Debug, Clone)]
-pub struct Artist {
-    pub path: String,
-    pub data: ArtistData,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct ArtistData {
-    pub name: String,
-    pub image: String,
-    pub location: Option<Vec<Location>>,
-    pub description: Option<String>,
-    pub country: Option<String>,
-    pub collective_members: Option<Vec<CollectiveMember>>,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct CollectiveMember {
-    pub name: String,
-    pub joined: Option<NaiveDate>,
-    pub left: Option<NaiveDate>,
-}
-
-pub type ArtistsByCountry = HashMap<String, Vec<Artist>>;
-#[derive(Debug, Deserialize, Clone)]
-pub struct Album {
-    pub name: String,
-    pub artist: String,
-    pub genre: String,
-    // pub duration: String,
-    pub released: NaiveDate,
-    pub cover: String,
-    pub tracks: HashMap<String, Track>,
-    pub track_count: i8,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct Track {
-    pub name: String,
-    pub duration: Option<String>,
-    pub artists: Option<Vec<String>>,
-    pub remix: Option<String>,
-    pub artist_cover: Option<String>,
-    pub location: Vec<Location>,
-    pub sample: Option<Vec<Sample>>,
-    pub lyrics: Option<String>,
-    pub wave: Option<Wave>,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct Location {
-    pub url: String,
-    pub at: Option<String>,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct Sample {
-    pub artist: String,
-    pub name: String,
-    pub r#type: String,
-    // from: Option<String>,
-    // to: Option<String>,
-}
-
-#[derive(Debug, Clone)]
-pub struct Wave {
-    pub length: i32,
-    pub points: Vec<u8>,
-}
-
-struct VisitorWave;
-
-impl<'de> Visitor<'de> for VisitorWave {
-    type Value = Wave;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("expected a string")
-    }
-
-    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error, {
-        let input = v;
-        let points = base64::decode(input).unwrap();
-        let length = points.len().try_into().unwrap();
-        Ok(Wave {
-            length,
-            points,
-        })
-        
-    }
-}
-
-impl<'de> Deserialize<'de> for Wave {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: serde::Deserializer<'de> {
-        deserializer.deserialize_str(VisitorWave)
-    }
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct Country {
-    pub name: String,
-    pub code: String,
-    pub emoji: String,
-}
-
-pub type Countries = HashMap<String, Country>;
-
-pub type Features = HashMap<String, Vec<TrackEntry>>;
+pub mod types;
+pub mod yaml;
+pub mod build;
 
 /// Parses a name (artist or album) for the file system.
 ///
@@ -148,29 +25,25 @@ pub fn parse_name(name: &str) -> String {
         .replace(is_space, "-")
 }
 
-/// Turns a wave struct into a string that can be used in JS.
-pub fn wave_to_str(wave: &Wave) -> String {
-    let strs: Vec<String> = wave.points.iter().map(|i| i.to_string()).collect();
-    strs.join(",")
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
 }
 
-pub fn get_countries() -> Result<Vec<Country>, Error> {
-    let file = std::fs::File::open("./lib/countries.json")?;
-    let countries: Vec<Country> = serde_json::from_reader(file).unwrap();
-    Ok(countries)
+impl Color {
+    fn hex(&self) -> String { format!("#{:02x?}{:02x?}{:02x?}", self.r, self.g, self.b) }
 }
 
-pub fn countries_to_hashmap(countries: &Vec<Country>) -> Countries {
-    let mut result = HashMap::new();
-    for country in countries {
-        result.insert(country.code.clone(), country.clone());
-    }
-    result
-}
+pub fn id_to_color(id: &str) -> Color {
+    let r;
+    let g;
+    let b;
 
-pub fn make_country(country: &Country, artists: &ArtistsByCountry) -> Option<String> {
-    let country_artists = artists.get(&country.code)?;
-    if country_artists.is_empty() { return None }
-    let result = format!("{} {} ({})", country.emoji, country.name, country_artists.len());
-    Some(result)
+    let hash = md5::compute(id);
+    r = hash[0];
+    g = hash[1];
+    b = hash[2];
+
+    Color {r, g, b}
 }

@@ -1,22 +1,53 @@
+{% let url_root = "http://localhost:5500/out/" %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Phonkhub</title>
+        {% if let Some(title) = page.title %}
+        <title>PhonkHub | {{ title }}</title>
+        {% else %}
+        <title>PhonkHub</title>
+        {% endif %}
+        <style>
+            @font-face {
+                font-family: phont;
+                src: url("{{ url_root }}phont.otf");
+            }
+            {% for (id, artist) in data.artists %}
+            {% let hex = crate::id_to_color(id).hex() %}
+            .artist-name.artist-name-{{ id }} {
+                color: {{ hex }};
+            }
+            .artist-name.artist-name-{{ id }}:hover {
+                background-color: {{ hex }};
+            }
+            .artist-name.artist-name-{{ id }}.active {
+                background-color: {{ hex }};
+                color: white;
+                font-weight: bold;
+            }
+            {% endfor %}
+        </style>
+        <link rel="stylesheet" href="{{ url_root }}styles.css" />
     </head>
-    <style>
-        #header {
-            text-align: center;
-        }
-    </style>
     <body>
-        <div id="header">
-            <b style="font-size: x-large"
-                >Phonk<span style="background-color: blueviolet">Hub</span>
-            </b>
+        <div id="header"></div>
+        <div id="body">
+            <div id="sidebar">
+                <div id="logo-container">
+                    <a id="logo" href="{{ url_root }}">
+                        <b style="font-size: x-large"
+                            >Phonk<span style="background-color: blueviolet"
+                                >Hub</span
+                            >
+                        </b>
+                    </a>
+                </div>
+                {% include "./partials/artists.html" %}
+            </div>
+            <div id="content">{% block content %}{% endblock %}</div>
         </div>
-        <div class="content">{% block content %}{% endblock %}</div>
     </body>
 </html>
