@@ -1,0 +1,53 @@
+/* Global styles */
+body {
+    font-family: phont;
+    background: #111;
+    color: white;
+    margin: 0;
+    height: 100vh;
+}
+
+/* Header */
+#header {
+    text-align: center;
+}
+
+/* Body */
+#body {
+    display: flex;
+    height: 100%;
+}
+
+/* Sidebar */
+#logo-container {
+    padding: 2em;
+}
+#logo {
+    color: white;
+    text-decoration: none;
+}
+.artist-name {
+    width: 100%;
+    display: block;
+}
+.artist-name:hover {
+    color: white;
+    font-weight: bold;
+}
+#sidebar {
+    background: #222;
+}
+#artists {
+    list-style-type: none;
+    padding-inline-start: 0;
+    margin-inline-start: 0;
+}
+#sidebar li {
+    padding-left: 2em;
+}
+
+/* Content */
+#content {
+    overflow: auto;
+    width: 100%;
+}

@@ -1,0 +1,10 @@
+<ul id="artists">
+    {% for (id, artist) in data.artists %}
+    <a
+        class="artist-name artist-name-{{ artist.id }}"
+        href="{{ url_root }}artists/{{ artist.id }}"
+    >
+        <li>{{ artist.name }}</li>
+    </a>
+    {% endfor %}
+</ul>

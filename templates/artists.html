@@ -1,14 +1,4 @@
 {% extends "base.html" %} {% block content %}
 <h1>Artists</h1>
-<ul>
-    {% for artist in artists %}
-    <li>
-        <a
-            style="color: {{ crate::id_to_color(artist.id).hex() }}"
-            href="./{{ artist.id }}"
-            >{{ artist.name }}</a
-        >
-    </li>
-    {% endfor %}
-</ul>
+<ul></ul>
 {% endblock %}
