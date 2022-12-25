@@ -29,6 +29,7 @@ body {
 .artist-name {
     width: 100%;
     display: block;
+    text-decoration: none;
 }
 .artist-name:hover {
     color: white;

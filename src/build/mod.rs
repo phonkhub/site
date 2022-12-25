@@ -30,3 +30,7 @@ pub fn template_write(content: &str, path: &str) -> Result<(), Error> {
     Ok(())
 }
 
+pub struct Page {
+    id_artist: Option<String>,
+    title: Option<String>,
+}

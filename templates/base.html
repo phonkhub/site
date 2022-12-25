@@ -5,7 +5,11 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Phonkhub</title>
+        {% if let Some(title) = page.title %}
+        <title>PhonkHub | {{ title }}</title>
+        {% else %}
+        <title>PhonkHub</title>
+        {% endif %}
         <style>
             @font-face {
                 font-family: phont;
@@ -18,6 +22,11 @@
             }
             .artist-name.artist-name-{{ id }}:hover {
                 background-color: {{ hex }};
+            }
+            .artist-name.artist-name-{{ id }}.active {
+                background-color: {{ hex }};
+                color: white;
+                font-weight: bold;
             }
             {% endfor %}
         </style>

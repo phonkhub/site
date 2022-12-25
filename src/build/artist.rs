@@ -4,12 +4,13 @@ use askama::Template;
 
 use crate::{types::music::{Artist, Album, Track}, yaml::{Data, Country, Features}, Color, id_to_color};
 
-use super::template_write;
+use super::{template_write, Page};
 
 
 #[derive(Template)]
 #[template(path = "artist.html")]
 struct TemplateArtists<'a> {
+    page: Page,
     data: &'a Data,
     artist: &'a Artist,
     country: Option<&'a Country>,
@@ -39,7 +40,12 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
     let collectives = data.get_collectives(id_artist);
 
     let color = id_to_color(id_artist).hex();
+    let page = Page {
+        title: Some(artist.name.clone()),
+        id_artist: Some(id_artist.to_owned())
+    };
     let template = TemplateArtists {
+        page,
         data,
         artist,
         country,

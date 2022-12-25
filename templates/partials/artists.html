@@ -1,7 +1,17 @@
 <ul id="artists">
-    {% for (id, artist) in data.artists %}
     <a
-        class="artist-name artist-name-{{ artist.id }}"
+        style="color: rgb(176, 176, 176); text-decoration: none"
+        href="{{ url_root }}artists/"
+    >
+        <li>artists:</li>
+    </a>
+    {% for artist in data.get_artists_sorted() %} {% let name_class %} {% if let
+    Some(id_artist) = page.id_artist %} {% if id_artist.clone() == artist.id %}
+    {% let name_class = "active" %} {% else %} {% let name_class = "none" %} {%
+    endif %} {% else %} {% let name_class = "none" %} {% endif %}
+
+    <a
+        class="artist-name artist-name-{{ artist.id }} {{ name_class }}"
         href="{{ url_root }}artists/{{ artist.id }}"
     >
         <li>{{ artist.name }}</li>

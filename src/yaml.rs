@@ -3,6 +3,8 @@ use serde::{Deserialize, de::Visitor};
 
 use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location}, parse_name};
 use std::{io::Error, fs::{read_dir, DirEntry}, collections::{HashMap, HashSet}, hash::Hash, mem};
+use itertools::Itertools;
+
 
 #[derive(Debug)]
 pub struct Data {
@@ -31,6 +33,14 @@ impl Data {
 
     pub fn get_artist(&self, id: &str) -> Option<Artist> {
         if let Some(artist) = self.artists.get(id) { Some(artist.clone()) } else { None }
+    }
+
+    pub fn get_artists_sorted(&self) -> Vec<Artist> {
+        self.artists
+            .keys()
+            .sorted()
+            .map(|id| self.artists.get(id).unwrap().clone())
+            .collect()
     }
 
     pub fn get_albums_by(&self, id: &str) -> Vec<Album> {
