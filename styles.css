@@ -53,7 +53,9 @@ a {
     font-weight: bold;
 }
 #sidebar {
-    background: #222;
+    background: black;
+    border-right: #3e3e3e;
+    border-right-style: dashed;
 }
 #artists {
     list-style-type: none;
