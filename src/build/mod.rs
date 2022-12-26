@@ -7,6 +7,7 @@ use self::index::build_index;
 use self::contribute::build_contribute;
 use self::artists::build_artists;
 use self::artist::build_artist;
+use self::album::build_album;
 use self::countries::build_countries;
 
 mod index;
@@ -14,6 +15,7 @@ mod contribute;
 mod artists;
 mod artist;
 mod countries;
+mod album;
 
 pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     build_index(&path, &data)?;
@@ -29,6 +31,12 @@ pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     let path_countries = path.to_owned() + "countries/";
     create_dir_all(&path_countries)?;
     build_countries(&path_countries, &data)?;
+
+    for (_, album) in &data.albums {
+        let path_album = path_artists.to_owned() + &album.artist_id + "/";
+        build_album(&path_album, &data, album)?;
+    }
+
     Ok(())
 }
 
