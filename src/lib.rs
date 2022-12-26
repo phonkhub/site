@@ -1,5 +1,6 @@
 use std::hash;
 use md5;
+use types::music::Artist;
 
 pub mod types;
 pub mod yaml;
@@ -46,4 +47,8 @@ pub fn id_to_color(id: &str) -> Color {
     b = hash[2];
 
     Color {r, g, b}
+}
+
+pub fn artists_filter_is_collective(artists: Vec<Artist>, is_collective: bool) -> Vec<Artist> {
+    artists.iter().filter(|artist| artist.collective_members.is_some() == is_collective).map(|artist| artist.clone()).collect()
 }

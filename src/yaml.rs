@@ -40,6 +40,16 @@ impl Data {
             .keys()
             .sorted()
             .map(|id| self.artists.get(id).unwrap().clone())
+            .filter(|artist| artist.collective_members.is_none())
+            .collect()
+    }
+
+    pub fn get_collectives_sorted(&self) -> Vec<Artist> {
+        self.artists
+            .keys()
+            .sorted()
+            .map(|id| self.artists.get(id).unwrap().clone())
+            .filter(|artist| artist.collective_members.is_some())
             .collect()
     }
 
@@ -114,6 +124,7 @@ impl Data {
 struct YamlArtist {
     pub name: String,
     pub image: String,
+    pub logo: Option<String>,
     pub urls: Vec<String>,
     pub description: Option<String>,
     pub country: Option<String>,
@@ -260,6 +271,7 @@ fn read_artist(path: &str, data: &mut Data, artist_id: &str) -> Result<Artist, E
         description: yaml.description,
         collective_members: colletive_members,
         urls: yaml.urls,
+        logo_url: yaml.logo,
     };
     Ok(artist)
 }

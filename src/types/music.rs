@@ -8,6 +8,7 @@ pub struct Artist {
     pub country_code: Option<String>,
     pub description: Option<String>,
     pub collective_members: Option<Vec<CollectiveMember>>,
+    pub logo_url: Option<String>,
     pub urls: Vec<String>,
 }
 

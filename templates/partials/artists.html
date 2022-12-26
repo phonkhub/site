@@ -1,3 +1,5 @@
+{% let artists = data.get_artists_sorted() %} {% let collectives =
+data.get_collectives_sorted() %}
 <ul id="artists">
     <a
         style="color: rgb(176, 176, 176); text-decoration: none"
@@ -5,7 +7,27 @@
     >
         <li>artists:</li>
     </a>
-    {% for artist in data.get_artists_sorted() %} {% let name_class %} {% if let
+    {% for artist in artists %} {% let name_class %} {% if let Some(id_artist) =
+    page.id_artist %} {% if id_artist.clone() == artist.id %} {% let name_class
+    = "active" %} {% else %} {% let name_class = "none" %} {% endif %} {% else
+    %} {% let name_class = "none" %} {% endif %}
+
+    <a
+        class="artist-name artist-name-{{ artist.id }} {{ name_class }}"
+        href="{{ url_root }}artists/{{ artist.id }}"
+    >
+        <li>{{ artist.name }}</li>
+    </a>
+    {% endfor %}
+
+    <li>--</li>
+    <a
+        style="color: rgb(176, 176, 176); text-decoration: none"
+        href="{{ url_root }}collectives/"
+    >
+        <li>collectives:</li>
+    </a>
+    {% for artist in collectives %} {% let name_class %} {% if let
     Some(id_artist) = page.id_artist %} {% if id_artist.clone() == artist.id %}
     {% let name_class = "active" %} {% else %} {% let name_class = "none" %} {%
     endif %} {% else %} {% let name_class = "none" %} {% endif %}

@@ -4,24 +4,42 @@
 <br />
 
 {% extends "base.html" %} {% block content %}
+<br />
+<br />
+
 <a href="../"><- back</a><br /><br /><br />
-<img height="150px" src="{{ artist.image_url }}" />
-<h1 style="color: {{ color }};">{{ artist.name }}</h1>
-{% if let Some(country) = country %}
-<p>
-    <a href="../../countries/{{ country.code }}.html"
-        >{{ country.name }} {{ country.emoji }}</a
-    >
-</p>
-{% endif %} {% if let Some(description) = artist.description %}
-<p>{{ description }}</p>
-{% endif %} {% if !collectives.is_empty() %}
-<h2>Collectives</h2>
-{% for collective_id in collectives %}
-<ul>
-    <li>{% call artist_macros::artist(collective_id) %}</li>
-</ul>
-{% endfor %} {% endif %}
+
+<div id="artist-data-container">
+    <div id="artist-image">
+        <img width="150px" src="{{ artist.image_url }}" />
+    </div>
+    <div id="artist-data">
+        {% if !collectives.is_empty() %}
+        <!-- <label style="color: #999">collectives:</label> -->
+        <div id="artist-collectives">
+            {% for collective_id in collectives %}
+            <ul>
+                <li>{% call artist_macros::artist_logo(collective_id) %}</li>
+            </ul>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <span id="artist-name" style="color: {{ color }};"
+            >{{ artist.name }}</span
+        >
+
+        {% if let Some(country) = country %}
+        <p>
+            <a href="../../countries/{{ country.code }}.html"
+                >{{ country.name }} {{ country.emoji }}</a
+            >
+        </p>
+        {% endif %} {% if let Some(description) = artist.description %}
+        <p>{{ description }}</p>
+        {% endif %}
+    </div>
+</div>
 
 <h2>Discography</h2>
 <ul>

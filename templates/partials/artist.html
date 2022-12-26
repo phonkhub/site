@@ -12,4 +12,24 @@ data.get_artist(id_artist) %}
     <h1>{{ id_artist }}</h1>
 </div>
 
+{% endif %} {%- endmacro -%} {%- macro artist_logo(id_artist) -%} {% if let
+Some(artist) = data.get_artist(id_artist) %}
+
+<a
+    title="Member of the {{ artist.name }} Collective"
+    href="{{ url_root }}artists/{{ id_artist }}"
+>
+    {% if let Some(url) = artist.logo_url %}
+    <img alt="{{ artist.name }} Logo" height="50px" src="{{ url }}" />
+    {% else %}
+    <h1>{{ artist.name }}</h1>
+    {% endif %}
+</a>
+
+{% else %}
+
+<div>
+    <h1>{{ id_artist }}</h1>
+</div>
+
 {% endif %} {%- endmacro -%}
