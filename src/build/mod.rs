@@ -4,17 +4,21 @@ use std::{io::Error, fs::write};
 use crate::yaml::Data;
 
 use self::index::build_index;
+use self::contribute::build_contribute;
 use self::artists::build_artists;
 use self::artist::build_artist;
 use self::countries::build_countries;
 
 mod index;
+mod contribute;
 mod artists;
 mod artist;
 mod countries;
 
 pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     build_index(&path, &data)?;
+    build_contribute(&path, &data)?;
+
     let path_artists = path.to_owned() + "artists/";
     create_dir_all(&path_artists)?;
     build_artists(&path_artists, &data)?;
