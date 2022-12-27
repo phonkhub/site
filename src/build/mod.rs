@@ -8,6 +8,7 @@ use self::contribute::build_contribute;
 use self::artists::build_artists;
 use self::artist::build_artist;
 use self::album::build_album;
+use self::track::build_track;
 use self::countries::build_countries;
 
 mod index;
@@ -16,6 +17,7 @@ mod artists;
 mod artist;
 mod countries;
 mod album;
+mod track;
 
 pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     build_index(&path, &data)?;
@@ -35,6 +37,12 @@ pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     for (_, album) in &data.albums {
         let path_album = path_artists.to_owned() + &album.artist_id + "/";
         build_album(&path_album, &data, album)?;
+    }
+
+    for (id_track, track) in &data.tracks {
+        let album = data.get_album(&track.album_id);
+        let path_track = path_artists.to_owned() + &album.artist_id + "/" + &track.album_id + "/";
+        build_track(&path_track, &data, &track)?;
     }
 
     Ok(())

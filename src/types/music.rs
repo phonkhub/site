@@ -27,13 +27,14 @@ pub struct Album {
     pub genres: Vec<String>,
     pub duration: Duration,
     pub cover_url: String,
-    pub track_count: i8,
+    pub track_count: u8,
 }
 
 #[derive(Debug, Clone)]
 pub struct Track {
     pub id: String,
     pub name: String,
+    pub position: u8,
     pub artist_id: String,
     pub album_id: String,
     pub duration: Option<Duration>,

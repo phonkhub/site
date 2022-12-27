@@ -1,6 +1,6 @@
 use std::hash;
 use md5;
-use types::music::Artist;
+use types::music::{Artist, Wave};
 
 pub mod types;
 pub mod yaml;
@@ -40,15 +40,19 @@ pub fn id_to_color(id: &str) -> Color {
     let r;
     let g;
     let b;
-
     let hash = md5::compute(id);
     r = hash[0];
     g = hash[1];
     b = hash[2];
-
     Color {r, g, b}
 }
 
 pub fn artists_filter_is_collective(artists: Vec<Artist>, is_collective: bool) -> Vec<Artist> {
     artists.iter().filter(|artist| artist.collective_members.is_some() == is_collective).map(|artist| artist.clone()).collect()
+}
+
+/// Turns a wave struct into a string that can be used in JS.
+pub fn wave_to_str(wave: &Wave) -> String {
+    let strs: Vec<String> = wave.points.iter().map(|i| i.to_string()).collect();
+    strs.join(",")
 }

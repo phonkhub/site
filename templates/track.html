@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<img height="200px" src="{{ album.cover }}" />
+<img height="200px" src="{{ album.cover_url }}" />
 
 <h1>{{ album.name }} / {{ track.name }}</h1>
 
@@ -10,13 +10,11 @@
 <script>
     let canvas = document.getElementById("wave");
     let ctx = canvas.getContext("2d");
-    let wave = [{{ site::wave_to_str(wave) }}];
+    let wave = [{{ crate::wave_to_str(wave) }}];
 
     ctx.strokeStyle = "white";
 
     for (let i = 0; i < 1800; i++) {
-
-
         ctx.beginPath();
         ctx.moveTo(i, 128);
         ctx.lineTo(i, 128 - wave[i] / 2);

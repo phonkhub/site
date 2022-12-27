@@ -117,6 +117,15 @@ impl Data {
             .map(|id| id.to_owned())
             .collect::<Vec<String>>()
     }
+
+    pub fn get_tracks_in_album(&self, id_album: &str) -> HashMap<u8, Track> {
+        let mut result = HashMap::new();
+        for (id_track, track) in &self.tracks {
+            if track.album_id != id_album { continue; }
+            result.insert(track.position, track.clone());
+        }
+        result
+    }
 }
 
 
@@ -148,7 +157,7 @@ struct YamlAlbum {
     pub released: NaiveDate,
     pub cover: String,
     pub tracks: HashMap<String, YamlTrack>,
-    pub track_count: i8,
+    pub track_count: u8,
 }
 
 #[derive(Debug, Deserialize)]
@@ -316,7 +325,7 @@ fn get_album_data(path: &str) -> Result<YamlAlbum, Error> {
     Ok(data)
 }
 
-fn read_track(data: &mut Data, album_id: &str, album: &Album, position: &str, yaml: &YamlTrack) -> Result<(), Error> {
+fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str, yaml: &YamlTrack) -> Result<(), Error> {
     let name = &yaml.name;
     let id_track = parse_name(name);
     let artists = if let Some(artists) = &yaml.artists {
@@ -340,10 +349,12 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position: &str, ya
     let duration = if let Some(time) = &yaml.duration { Some(time_to_duration(time)) } else {
         None
     };
+    let position: u8 = position_str.parse().unwrap();
 
     let track = Track {
         id: id_track.clone(),
         name: name.to_owned(),
+        position,
         artist_id: album.artist_id.to_owned(),
         album_id: album_id.to_owned(),
         duration,

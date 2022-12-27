@@ -4,8 +4,13 @@
 <h1>{{ album.name }}</h1>
 
 <ol>
-    {% for i in (0..album.track_count) %}
-    <li>{{ i }}</li>
+    {% for i in (0..album.track_count) %} {% let track =
+    tracks.get(i+1).unwrap() %}
+    <li>
+        <a href="{{ url_root }}artists/{{ artist.id }}/{{ album.id }}"
+            >{{ track.name }}</a
+        >
+    </li>
     {% endfor %}
 </ol>
 {% endblock %}
