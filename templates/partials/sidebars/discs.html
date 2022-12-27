@@ -1,0 +1,21 @@
+{% let albums = data.get_albums_by(artist.id) %}
+<label>albums:</label>
+<ul>
+    {% for album in albums %} {% let name_class %} {% if let Some(id_album) =
+    page.id_album %} {% if id_album.clone() == album.id %} {% let name_class =
+    "active" %} {% else %} {% let name_class = "none" %} {% endif %} {% else %}
+    {% let name_class = "none" %} {% endif %}
+
+    <li class="{{ name_class }}">
+        <a href="{{ url_root }}artists/{{ album.artist_id }}/{{ album.id }}/">
+            <div style="display: flex">
+                <img height="100px" src="{{ album.cover_url }}" />
+                <br />
+
+                {{ album.name }}
+            </div>
+        </a>
+    </li>
+    <li>--</li>
+    {% endfor %}
+</ul>

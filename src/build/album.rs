@@ -24,9 +24,10 @@ pub fn build_album(path: &str, data: &Data, album: &Album) -> Result<(), Error> 
     let path_album_index = path_album.to_owned() + "index.html";
     let artist_id = album.artist_id.clone();
     let id_artist = Some(artist_id.clone());
+    let id_album = Some(album.id.clone());
     let artist = &data.get_artist(&artist_id).unwrap();
     let title = Some(album.name.clone());
-    let page = Page { id_artist, title };
+    let page = Page { id_artist, id_album, id_track: None, title };
     let tracks = data.get_tracks_in_album(&album.id);
     let template = TemplateAlbum { page, data, artist, album, tracks };
     let content = template.render().unwrap();

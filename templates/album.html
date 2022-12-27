@@ -1,16 +1,7 @@
-{% extends "base.html" %} {% block content %}
+{% extends "tracks.html" %} {% block content_album %} {% include
+"partials/back.html" %}
 <img height="200px" src="{{ album.cover_url }}" />
 
 <h1>{{ album.name }}</h1>
 
-<ol>
-    {% for i in (0..album.track_count) %} {% let track =
-    tracks.get(i+1).unwrap() %}
-    <li>
-        <a href="{{ url_root }}artists/{{ artist.id }}/{{ album.id }}"
-            >{{ track.name }}</a
-        >
-    </li>
-    {% endfor %}
-</ol>
 {% endblock %}

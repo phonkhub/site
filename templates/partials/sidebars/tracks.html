@@ -1,0 +1,16 @@
+{% let tracks = data.get_tracks_in_album(album.id) %}
+<label>tracks:</label>
+<ol>
+    {% for i in (0..album.track_count) %} {% let track =
+    tracks.get(i+1).unwrap() %} {% let name_class %} {% if let Some(id_track) =
+    page.id_track %} {% if id_track.clone() == track.id %} {% let name_class =
+    "active" %} {% else %} {% let name_class = "none" %} {% endif %} {% else %}
+    {% let name_class = "none" %} {% endif %}
+    <li class="{{ name_class }}">
+        <a
+            href="{{ url_root }}artists/{{ artist.id }}/{{ album.id }}/{{ track.id }}.html"
+            >{{ track.name }}</a
+        >
+    </li>
+    {% endfor %}
+</ol>

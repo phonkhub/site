@@ -1,0 +1,7 @@
+{% extends "discs.html" %}{% block content_artist %}
+
+<div class="tab">
+    <div class="sidebar">{% include "./partials/sidebars/tracks.html" %}</div>
+    <div class="content">{% block content_album %}{% endblock %}</div>
+</div>
+{% endblock %}

@@ -55,5 +55,7 @@ pub fn template_write(content: &str, path: &str) -> Result<(), Error> {
 
 pub struct Page {
     id_artist: Option<String>,
+    id_album: Option<String>,
+    id_track: Option<String>,
     title: Option<String>,
 }

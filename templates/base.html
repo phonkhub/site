@@ -36,22 +36,11 @@
         <link rel="stylesheet" href="{{ url_root }}styles.css" />
     </head>
     <body>
-        <div id="header"></div>
-        <div id="body">
-            <div id="sidebar">
-                <div id="logo-container">
-                    <a id="logo" href="{{ url_root }}">
-                        <img height="60px" src="{{ url_root }}lean.png" />
-                        <b style="font-size: x-large"
-                            >Phonk<span style="background-color: blueviolet"
-                                >Hub</span
-                            >
-                        </b>
-                    </a>
-                </div>
-                {% include "./partials/artists.html" %}
+        <div class="tab">
+            <div class="sidebar">
+                {% include "./partials/sidebars/artists.html" %}
             </div>
-            <div id="content">
+            <div class="content">
                 {% block content %}{% endblock %} {% include
                 "./partials/footer.html" %}
             </div>

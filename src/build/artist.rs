@@ -44,7 +44,9 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
     let color = id_to_color(id_artist).hex();
     let page = Page {
         title: Some(artist.name.clone()),
-        id_artist: Some(id_artist.to_owned())
+        id_artist: Some(id_artist.to_owned()),
+        id_album: None,
+        id_track: None,
     };
     let template = TemplateArtists {
         page,

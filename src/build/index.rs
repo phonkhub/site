@@ -18,6 +18,8 @@ pub fn build_index(path: &str, data: &Data) -> Result<(), Error> {
     let page = Page {
         title: None,
         id_artist: None,
+        id_album: None,
+        id_track: None,
     };
     let template = TemplateIndex { page, data };
     let content = template.render().unwrap();

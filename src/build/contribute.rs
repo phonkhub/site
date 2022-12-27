@@ -18,6 +18,8 @@ pub fn build_contribute(path: &str, data: &Data) -> Result<(), Error> {
     let page = Page {
         title: Some(String::from("Contribute")),
         id_artist: None,
+        id_album: None,
+        id_track: None,
     };
     let template = TemplateContributing { page, data };
     let content = template.render().unwrap();

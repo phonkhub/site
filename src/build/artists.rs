@@ -20,6 +20,8 @@ pub fn build_artists(path: &str, data: &Data) -> Result<(), Error> {
     let page = Page {
         title: Some(String::from("Artists")),
         id_artist: None,
+        id_album: None,
+        id_track: None,
     };
     let template = TemplateArtists {
         page,

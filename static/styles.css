@@ -12,9 +12,9 @@ a {
     text-decoration: none;
 }
 
-/* Header */
-#header {
-    text-align: center;
+.tab {
+    display: flex;
+    height: 100%;
 }
 
 /* Footer */
@@ -28,6 +28,10 @@ a {
 #body {
     display: flex;
     height: 100%;
+}
+
+.body {
+    padding: 2em;
 }
 
 /* Sidebar */
@@ -52,12 +56,12 @@ a {
     color: white;
     font-weight: bold;
 }
-#sidebar {
+.sidebar {
     background: black;
     border-right: #3e3e3e;
     border-right-style: dashed;
 }
-#artists {
+.tab ul {
     list-style-type: none;
     padding-inline-start: 0;
     margin-inline-start: 0;
@@ -67,10 +71,9 @@ a {
 }
 
 /* Content */
-#content {
+.content {
     overflow: auto;
     width: 100%;
-    padding: 2em;
 }
 
 /* Artist */
@@ -92,4 +95,9 @@ a {
 }
 #artist-data #artist-collectives ul:hover {
     opacity: 1;
+}
+
+.sidebar .active {
+    background: white;
+    color: black;
 }
