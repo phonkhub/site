@@ -1,4 +1,5 @@
 use std::hash;
+use chrono::Duration;
 use md5;
 use types::music::{Artist, Wave};
 
@@ -55,4 +56,26 @@ pub fn artists_filter_is_collective(artists: Vec<Artist>, is_collective: bool) -
 pub fn wave_to_str(wave: &Wave) -> String {
     let strs: Vec<String> = wave.points.iter().map(|i| i.to_string()).collect();
     strs.join(",")
+}
+
+pub fn str_to_duration(time: &str) -> Duration {
+    let (min_or_hour, sec_or_min_and_sec) = time.split_once(":").unwrap();
+    if let Some((min, sec)) = sec_or_min_and_sec.split_once(":") {
+        let hour = min_or_hour.parse().unwrap();
+        let min = min.parse().unwrap();
+        let sec = sec.parse().unwrap();
+        Duration::hours(hour) +
+        Duration::minutes(min) +
+        Duration::seconds(sec)
+    } else {
+        let min = min_or_hour;
+        let sec = sec_or_min_and_sec;
+        Duration::seconds(sec.parse().unwrap()) + Duration::minutes(min.parse().unwrap())
+    }
+}
+
+pub fn duration_to_str(duration: &Duration) -> String {
+    let min = duration.num_minutes();
+    let sec = duration.num_seconds() - min * 60;
+    format!("#t={}%3A{}", min, sec)
 }

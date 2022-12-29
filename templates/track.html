@@ -3,7 +3,31 @@
 
 <h1>{{ album.name }} / {{ track.name }}</h1>
 
-{% if let Some(wave) = track.wave %}
+{% if let Some(loc) = track.location_bandcamp() %}
+<a target="_blank" href="{{ loc.url }}">
+    <span class="loc loc-bc">bandcamp</span>
+</a>
+{% endif %} {% if let Some(loc) = track.location_soundcloud() %} {% let time %}
+{% if let Some(at) = loc.at %} {% let time = crate::duration_to_str(at) %} {%
+else %} {% let time = String::new() %} {% endif %}
+<a target="_blank" href="{{ loc.url }}{{ time }}">
+    <span class="loc loc-sc">soundcloud</span>
+</a>
+{% endif %} {% if let Some(loc) = track.location_youtube() %} {% let time %} {%
+if let Some(at) = loc.at %} {% let time = at.num_seconds().to_string() %} {%
+else %} {% let time = String::new() %} {% endif %}
+<a target="_blank" href="{{ loc.url }}&t={{ time }}">
+    <span class="loc loc-yt">youtube</span>
+</a>
+{% endif %} {% if let Some(loc) = track.location_spotify() %}
+<a target="_blank" href="{{ loc.url }}">
+    <span class="loc loc-spot">spotify</span>
+</a>
+{% endif %} {% if let Some(loc) = track.location_apple() %}
+<a target="_blank" href="{{ loc.url }}">
+    <span class="loc loc-apple">apple</span>
+</a>
+{% endif %} {% if let Some(wave) = track.wave %}
 
 <canvas id="wave" width="1800" height="128"></canvas>
 

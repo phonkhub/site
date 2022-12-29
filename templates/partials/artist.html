@@ -2,14 +2,25 @@
 data.get_artist(id_artist) %}
 
 <a href="{{ url_root }}artists/{{ id_artist }}">
-    <h1>{{ artist.name }}</h1>
-    <img height="100px" src="{{ artist.image_url }}" />
+    <div class="artist artist-name artist-name-{{ artist.id }}">
+        <img height="80px" src="{{ artist.image_url }}" />
+        <h1>{{ artist.name }}</h1>
+    </div>
 </a>
 
 {% else %}
 
 <div>
-    <h1>{{ id_artist }}</h1>
+    <a
+        target="_blank"
+        href="https://github.com/phonkhub/db/new/main/artists/?filename=artists/{{ id_artist }}/.artist.yml"
+    >
+        <div class="artist">
+            <img height="80px" src="{{ url_root }}lean.png" />
+            <h1 style="color: red">{{ id_artist }}</h1>
+            <label>click to add artist data</label>
+        </div>
+    </a>
 </div>
 
 {% endif %} {%- endmacro -%} {%- macro artist_logo(id_artist) -%} {% if let

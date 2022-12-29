@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
-use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location}, parse_name};
+use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location}, parse_name, str_to_duration};
 use std::{io::Error, fs::{read_dir, DirEntry}, collections::{HashMap, HashSet}, hash::Hash, mem};
 use itertools::Itertools;
 
@@ -90,6 +90,25 @@ impl Data {
         result
     }
 
+    /// These exclude albums by the same artist.
+    pub fn get_features_by(&self, id_artist: &str) -> Features {
+        let mut result = HashMap::new();
+        let has_feature = |track: &Track| track.artists
+            .iter()
+            .any(|artist| artist.id == id_artist);
+
+        for (id, track) in &self.tracks {
+            if !has_feature(track) { continue; }
+            let album = self.get_album(&track.album_id);
+            if album.artist_id == id_artist { continue; }
+
+            if let None = result.get(&track.album_id) { result.insert(track.album_id.clone(), vec![]); }
+            let album_tracks = result.get_mut(&track.album_id).unwrap();
+            album_tracks.push(track.clone());
+        }
+        result
+    }
+
     /// Return every artist with the given id as a member.
     pub fn get_collectives(&self, id_artist: &str) -> Vec<String> {
         let is_member = |collective: &Artist| collective.collective_members.as_ref().unwrap().iter().any(|member| member.id == id_artist);
@@ -165,6 +184,7 @@ pub struct YamlTrack {
     pub name: String,
     pub duration: Option<String>,
     pub artists: Option<Vec<YamlTrackArtist>>,
+    pub artist: Option<String>,
     pub remix: Option<String>,
     pub artist_cover: Option<String>,
     pub location: Vec<YamlLocation>,
@@ -328,7 +348,7 @@ fn get_album_data(path: &str) -> Result<YamlAlbum, Error> {
 fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str, yaml: &YamlTrack) -> Result<(), Error> {
     let name = &yaml.name;
     let id_track = parse_name(name);
-    let artists = if let Some(artists) = &yaml.artists {
+    let artists = if let Some(artist) = &yaml.artist { vec![TrackArtist{ id: artist.to_owned(), r#for: None }]} else { if let Some(artists) = &yaml.artists {
         artists.iter().map(|artist| TrackArtist {
             id: artist.id.to_owned(),
             r#for: artist.r#for.to_owned(),
@@ -340,13 +360,13 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
                 r#for: None,
             }
         ]
-    };
+    }};
     let locations = yaml.location.iter().map(|location| {
         let url = location.url.to_owned();
-        let at = if let Some(time) = &location.at { Some(time_to_duration(&time)) } else { None };
+        let at = if let Some(time) = &location.at { Some(str_to_duration(&time)) } else { None };
         Location { url, at, } 
     }).collect();
-    let duration = if let Some(time) = &yaml.duration { Some(time_to_duration(time)) } else {
+    let duration = if let Some(time) = &yaml.duration { Some(str_to_duration(time)) } else {
         None
     };
     let position: u8 = position_str.parse().unwrap();
@@ -369,9 +389,6 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
     Ok(())
 }
 
-pub fn time_to_duration(time: &str) -> Duration {
-    Duration::seconds(0)
-}
 
 pub fn get_countries() -> Result<HashMap<String, Country>, Error> {
     let file = std::fs::File::open("./lib/countries.json")?;

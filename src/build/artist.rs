@@ -15,7 +15,6 @@ struct TemplateArtists<'a> {
     artist: &'a Artist,
     country: Option<&'a Country>,
     albums: Vec<Album>,
-    features: Features,
     collectives: Vec<String>,
     color: String,
 }
@@ -31,13 +30,15 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
     } else { None };
 
     let albums = data.get_albums_by(id_artist);
+
     let tracks = data.get_tracks_by(id_artist);
-    let mut features = HashMap::new();
-    let is_own_album = |id: &str| albums.iter().map(|album| &album.id).any(|id_album| id == id_album );
-    for (id_album, tracks) in &tracks {
-        if is_own_album(id_album) { continue; }
-        features.insert(id_album.clone(), tracks.clone());
-    }
+
+    // let mut features = HashMap::new();
+    // let is_own_album = |id: &str| albums.iter().map(|album| &album.id).any(|id_album| id == id_album );
+    // for (id_album, tracks) in &tracks {
+    //     if is_own_album(id_album) { continue; }
+    //     features.insert(id_album.clone(), tracks.clone());
+    // }
 
     let collectives = data.get_collectives(id_artist);
 
@@ -54,7 +55,6 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
         artist,
         country,
         albums,
-        features,
         collectives,
         color,
     };

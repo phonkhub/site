@@ -37,6 +37,42 @@ content_artist %}
             {% endif %}
         </div>
     </div>
+
+    <br /><br />
+    <div id="urls">
+        {% if let Some(url) = artist.url_bandcamp() %}
+        <a target="_blank" href="{{ url }}">
+            <span class="loc loc-bc">bandcamp</span>
+        </a>
+        {% endif %} {% if let Some(url) = artist.url_soundcloud() %}
+        <a target="_blank" href="{{ url }}">
+            <span class="loc loc-sc">soundcloud</span>
+        </a>
+        {% endif %} {% if let Some(url) = artist.url_youtube() %}
+        <a target="_blank" href="{{ url }}">
+            <span class="loc loc-yt">youtube</span>
+        </a>
+        {% endif %} {% if let Some(url) = artist.url_spotify() %}
+        <a target="_blank" href="{{ url }}">
+            <span class="loc loc-spot">spotify</span>
+        </a>
+        {% endif %} {% if let Some(url) = artist.url_apple() %}
+        <a target="_blank" href="{{ url }}">
+            <span class="loc loc-apple">apple</span>
+        </a>
+        {% endif %}
+    </div>
+
+    {% if let Some(members) = artist.collective_members %}
+    <br />
+    <label>members:</label><br />
+    <br />
+    <div id="members" class="row">
+        {% for member in members %}
+        <div class="column">{% call artist_macros::artist(member.id) %}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}
