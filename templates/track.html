@@ -29,22 +29,32 @@ else %} {% let time = String::new() %} {% endif %}
     <span class="loc loc-apple">apple</span>
 </a>
 {% endif %} {% if let Some(wave) = track.wave %}
+<br />
+<br />
+<br />
+<br />
 
-<canvas id="wave" width="1800" height="128"></canvas>
+<canvas id="wave" width="600" height="64"></canvas>
+<br />
+<br />
 
 <script>
+    let width = 600;
+    let height = 64;
     let canvas = document.getElementById("wave");
     let ctx = canvas.getContext("2d");
     let wave = [{{ crate::wave_to_str(wave) }}];
 
     ctx.strokeStyle = "white";
 
-    for (let i = 0; i < 1800; i++) {
+    let scale = 3;
+
+    for (let i = 0; i < width; i++) {
         ctx.beginPath();
-        ctx.moveTo(i, 128);
-        ctx.lineTo(i, 128 - wave[i] / 2);
+        ctx.moveTo(i, height);
+        ctx.lineTo(i, height - wave[i * scale] / 4);
         ctx.stroke();
     }
 </script>
 
-{% endif %} {% endblock %}
+{% endif %} {% include "./partials/footer.html" %} {% endblock %}
