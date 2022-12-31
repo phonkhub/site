@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
-use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location, Wave}, parse_name, str_to_duration};
+use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location, Wave, Sample}, parse_name, str_to_duration};
 use std::{io::Error, fs::{read_dir, DirEntry}, collections::{HashMap, HashSet}, hash::Hash, mem, f32::consts::E};
 use itertools::Itertools;
 
@@ -199,7 +199,7 @@ pub struct YamlTrack {
     pub artists: Option<Vec<YamlTrackArtist>>,
     pub artist: Option<String>,
     pub location: Vec<YamlLocation>,
-    pub sample: Option<Vec<Sample>>,
+    pub sample: Option<Vec<YamlSample>>,
     pub lyrics: Option<String>,
     pub wave: Option<Wave>,
 }
@@ -217,7 +217,7 @@ pub struct YamlLocation {
 }
 
 #[derive(Debug, Deserialize, Clone)]
-pub struct Sample {
+pub struct YamlSample {
     pub artist: String,
     pub name: String,
     pub r#type: String,
@@ -390,6 +390,15 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
     };
     let position: u8 = position_str.parse().unwrap();
     let wave = if let Some(wave) = &yaml.wave { Some(wave.clone()) } else { None };
+    let samples = if let Some(samples) = &yaml.sample {
+        samples
+            .iter()
+            .map(|sample| Sample {
+                artist: sample.artist.clone(),
+                name: sample.name.clone(),
+                r#type: sample.r#type.clone() })
+            .collect()
+    } else { vec![] };
 
     let track = Track {
         id: id_track.clone(),
@@ -400,7 +409,7 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
         duration,
         artists,
         locations,
-        samples: vec![], // TODO: implement me
+        samples,
         wave,
     };
 

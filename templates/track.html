@@ -35,8 +35,6 @@ else %} {% let time = String::new() %} {% endif %}
 <br />
 
 <canvas id="wave" width="600" height="64"></canvas>
-<br />
-<br />
 
 <script>
     let width = 600;
@@ -57,4 +55,16 @@ else %} {% let time = String::new() %} {% endif %}
     }
 </script>
 
+{% endif %} {% if track.samples.len() > 0 %}
+<br />
+<br />
+<br />
+<label>samples:</label>
+<div>
+    {% for sample in track.samples %}
+
+    <div>({{ sample.type }}) {{ sample.artist }} - {{ sample.name }}</div>
+
+    {% endfor %}
+</div>
 {% endif %} {% include "./partials/footer.html" %} {% endblock %}
