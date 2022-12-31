@@ -1,5 +1,46 @@
-{%- macro album(album_id) -%} {% let album = data.get_album(album_id) %} {% let
-album_artists = data.get_album_artist_ids(album_id) %}
+{% macro artist_name(id_artist) %} {% if let Some(artist) =
+data.get_artist(id_artist) %}
+
+<a
+    class="artist-name artist-name-{{ artist.id }}"
+    href="{{ url_root }}artists/{{ artist.id }}/"
+>
+    {{ artist.name }}
+</a>
+{% else %}
+<a
+    title="Click to add artist data"
+    style="color: red"
+    target="_blank"
+    href="https://github.com/phonkhub/db/new/main/artists/?filename=artists/{{ id_artist }}/.artist.yml"
+    >{{ id_artist }}</a
+>
+{% endif %} {% endmacro %} {%- macro album_base(id_album) -%} {% let album =
+data.get_album(id_album) %} {% let album_artists =
+data.get_album_artist_ids(id_album) %} {% let track_page %} {% if
+album.track_count == 1 %} {% let track =
+data.get_tracks_in_album(album.id).values().next().unwrap().clone() %} {% let
+track_page = track.id.to_owned() + ".html" %} {% else %} {% let track_page =
+"".to_owned() %}{% endif %}
+
+<a
+    href="{{ url_root }}artists/{{ album.artist_id }}/{{ album.id }}/{{ track_page }}"
+>
+    <div style="display: flex">
+        <img height="100px" src="{{ album.cover_url }}" />
+        <br />
+
+        <div>
+            {{ album.name }}
+            <br />
+            {% call artist_name(album.artist_id) %}
+        </div>
+    </div>
+</a>
+
+{%- endmacro -%} {%- macro album(album_id) -%} {% let album =
+data.get_album(album_id) %} {% let album_artists =
+data.get_album_artist_ids(album_id) %}
 
 <a href="{{ url_root }}artists/{{ album.artist_id }}/{{ album.id }}/">
     <h1>{{ album.name }}</h1>

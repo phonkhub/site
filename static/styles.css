@@ -94,7 +94,6 @@ label {
 }
 .artist-name {
     width: 100%;
-    display: block;
     text-decoration: none;
 }
 .artist-name:hover {
@@ -165,7 +164,7 @@ label {
 
 .loc.loc-spot {  box-shadow: 5px 5px #1DB954; border: #1DB954 solid 4px; }
 
-.loc.loc-apple {  box-shadow: 5px 5px #fb3e57 backgroundborder # solid 4pxfb3e57 }
+.loc.loc-apple {  box-shadow: 5px 5px #fb3e57; border: #fb3e57 solid 4px; }
 
 .loc:hover {
     box-shadow: -5px -5px;

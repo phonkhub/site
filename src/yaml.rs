@@ -120,6 +120,16 @@ impl Data {
             .collect()
     }
 
+    pub fn get_collectives_active(&self, id_artist: &str) -> Vec<String> {
+        let is_member = |collective: &Artist| collective.collective_members.as_ref().unwrap().iter().any(|member| member.id == id_artist && member.left.is_none());
+        self.artists
+            .values()
+            .filter(|artist| artist.collective_members.is_some())
+            .filter(|artist| is_member(&artist))
+            .map(|artist| artist.id.to_owned())
+            .collect()
+    }
+
     pub fn get_album_artist_ids(&self, id_album: &str) -> Vec<String> {
         self.tracks
             .values()
@@ -162,8 +172,10 @@ struct YamlArtist {
 #[derive(Debug, Deserialize)]
 struct YamlCollectiveMember {
     pub name: String,
-    pub joined: Option<NaiveDate>,
-    pub left: Option<NaiveDate>,
+    /// Year of joined.
+    pub joined: Option<i32>,
+    /// Year of left.
+    pub left: Option<i32>,
 
 }
 
@@ -177,6 +189,7 @@ struct YamlAlbum {
     pub cover: String,
     pub tracks: HashMap<String, YamlTrack>,
     pub track_count: u8,
+    pub urls: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -185,8 +198,6 @@ pub struct YamlTrack {
     pub duration: Option<String>,
     pub artists: Option<Vec<YamlTrackArtist>>,
     pub artist: Option<String>,
-    pub remix: Option<String>,
-    pub artist_cover: Option<String>,
     pub location: Vec<YamlLocation>,
     pub sample: Option<Vec<Sample>>,
     pub lyrics: Option<String>,
@@ -281,13 +292,14 @@ fn read_artists(path: &str, data: &mut Data) -> Result<(), Error>{
 }
 
 fn read_artist(path: &str, data: &mut Data, artist_id: &str) -> Result<Artist, Error> {
+    let read_year = |year: Option<i32>| -> Option<NaiveDate> { year.map(|year| NaiveDate::from_yo_opt(year, 1).unwrap()) };
     let yaml = get_artist_data(path)?;
     let colletive_members = if let Some(members) = yaml.collective_members {
         let yaml_to_member = |member: &YamlCollectiveMember| 
             CollectiveMember {
             id: member.name.to_owned(),
-            joined: member.joined,
-            left: member.left,
+            joined: read_year(member.joined),
+            left: read_year(member.left)
         };
         Some(members.iter().map(yaml_to_member).collect())
     } else { None };
@@ -321,14 +333,21 @@ fn read_albums(path: &str, data: &mut Data, id_artist: &str) -> Result<(), Error
         let (id_album, _) = path_file.split_once('.').unwrap();
         let path = path.to_owned() + "/" + &path_file;
         let yaml = get_album_data(&path)?;
+        let track_count = yaml.track_count;
+        let album_urls = if let Some(urls) = yaml.urls { urls } else {
+            if track_count > 1 { panic!("{} for albums, urls are required", path) }
+            yaml.tracks.get("1").unwrap().location.iter().map(|loc| loc.url.clone()).collect()
+        };
         let album = Album {
             id: id_album.to_owned(),
             name: yaml.name,
             artist_id: id_artist.to_owned(),
             genres: vec![],
             duration: Duration::seconds(0),
+            released: yaml.released,
             cover_url: yaml.cover,
-            track_count: yaml.track_count,
+            track_count: track_count,
+            urls: album_urls,
         };
         data.albums.insert(id_album.to_owned(), album.clone());
 

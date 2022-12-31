@@ -19,6 +19,7 @@ data.get_collectives_sorted() %}
     %} {% let name_class = "none" %} {% endif %}
 
     <a
+        style="display: block"
         class="artist-name artist-name-{{ artist.id }} {{ name_class }}"
         href="{{ url_root }}artists/{{ artist.id }}"
     >

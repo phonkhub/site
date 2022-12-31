@@ -1,4 +1,5 @@
-{% extends "discs.html" %}{% block content_artist %}
+{%- import "./partials/album.html" as album_macros -%} {% extends "discs.html"
+%}{% block content_artist %}
 
 <div class="tab">
     <div class="sidebar">{% include "./partials/sidebars/tracks.html" %}</div>

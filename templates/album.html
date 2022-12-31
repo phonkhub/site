@@ -1,7 +1,35 @@
-{% extends "tracks.html" %} {% block content_album %} {% include
-"partials/back.html" %}
+{%- import "partials/album.html" as album_macros -%} {% extends "tracks.html" %}
+{% block content_album %} {% include "partials/back.html" %}
 <img height="200px" src="{{ album.cover_url }}" />
 
 <h1>{{ album.name }}</h1>
+<label>released:</label>
+<span>{{ album.released }}</span>
+<br />
+<br />
+<br />
+<div id="urls">
+    {% if let Some(url) = album.url_bandcamp() %}
+    <a target="_blank" href="{{ url }}">
+        <span class="loc loc-bc">bandcamp</span>
+    </a>
+    {% endif %} {% if let Some(url) = album.url_soundcloud() %}
+    <a target="_blank" href="{{ url }}">
+        <span class="loc loc-sc">soundcloud</span>
+    </a>
+    {% endif %} {% if let Some(url) = album.url_youtube() %}
+    <a target="_blank" href="{{ url }}">
+        <span class="loc loc-yt">youtube</span>
+    </a>
+    {% endif %} {% if let Some(url) = album.url_spotify() %}
+    <a target="_blank" href="{{ url }}">
+        <span class="loc loc-spot">spotify</span>
+    </a>
+    {% endif %} {% if let Some(url) = album.url_apple() %}
+    <a target="_blank" href="{{ url }}">
+        <span class="loc loc-apple">apple</span>
+    </a>
+    {% endif %}
+</div>
 
 {% endblock %}

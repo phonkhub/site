@@ -40,7 +40,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
     //     features.insert(id_album.clone(), tracks.clone());
     // }
 
-    let collectives = data.get_collectives(id_artist);
+    let collectives = data.get_collectives_active(id_artist);
 
     let color = id_to_color(id_artist).hex();
     let page = Page {

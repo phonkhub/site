@@ -28,6 +28,23 @@ impl Artist {
     pub fn url_apple(&self) -> Option<String> { self.url(URL_APPLE) }
 }
 
+
+impl Album {
+    fn url(&self, url_key: &str) -> Option<String> {
+        for url in &self.urls {
+            let is_soundcloud = url.contains(url_key);
+            if is_soundcloud { return Some(url.to_owned());}
+        }
+        None
+    }
+
+    pub fn url_bandcamp(&self) -> Option<String> { self.url(URL_BANDCAMP) }
+    pub fn url_soundcloud(&self) -> Option<String> { self.url(URL_SOUNDCLOUD) }
+    pub fn url_youtube(&self) -> Option<String> { self.url(URL_YOUTUBE) }
+    pub fn url_spotify(&self) -> Option<String> { self.url(URL_SPOTIFY) }
+    pub fn url_apple(&self) -> Option<String> { self.url(URL_APPLE) }
+}
+
 #[derive(Debug, Clone)]
 pub struct CollectiveMember {
     pub id: String,
@@ -41,9 +58,11 @@ pub struct Album {
     pub name: String,
     pub artist_id: String,
     pub genres: Vec<String>,
+    pub released: NaiveDate,
     pub duration: Duration,
     pub cover_url: String,
     pub track_count: u8,
+    pub urls: Vec<String>,
 }
 
 #[derive(Debug, Clone)]

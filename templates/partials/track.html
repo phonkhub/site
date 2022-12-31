@@ -1,0 +1,8 @@
+{%- macro track_anchor(track_id) -%} {% let track = data.get_track(track_id) %}
+
+<a
+    href="{{ url_root }}artists/{{ album.artist_id }}/{{ album.id }}/{{ track_id }}.html"
+>
+</a>
+
+{%- endmacro -%}

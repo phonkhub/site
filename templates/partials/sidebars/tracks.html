@@ -11,6 +11,8 @@
             href="{{ url_root }}artists/{{ artist.id }}/{{ album.id }}/{{ track.id }}.html"
             >{{ track.name }}</a
         >
+        {% for track_artist in track.artists %} {% call
+        album_macros::artist_name(track_artist.id) %} {% endfor %}
     </li>
     {% endfor %}
 </ol>
