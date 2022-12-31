@@ -12,9 +12,54 @@ a {
     text-decoration: none;
 }
 
+label {
+    color: rgb(176, 176, 176);
+    text-decoration: none"
+}
+
 .tab {
     display: flex;
     height: 100%;
+}
+
+.row {
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+
+/* Create four equal columns that sits next to each other */
+.column {
+    -ms-flex: 25%; /* IE10 */
+    flex: 25%;
+    max-width: 25%;
+    padding: 0 4px;
+}
+
+/* .column img {
+    margin-top: 8px;
+    vertical-align: middle;
+    width: 100%;
+} */
+
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 800px) {
+    .column {
+        -ms-flex: 50%;
+        flex: 50%;
+        max-width: 50%;
+    }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column {
+        -ms-flex: 100%;
+        flex: 100%;
+        max-width: 100%;
+    }
 }
 
 /* Footer */
@@ -49,7 +94,6 @@ a {
 }
 .artist-name {
     width: 100%;
-    display: block;
     text-decoration: none;
 }
 .artist-name:hover {
@@ -100,4 +144,28 @@ a {
 .sidebar .active {
     background: white;
     color: black;
+}
+
+#members .artist {
+    text-align: center;
+}
+
+.loc {
+    color: white;
+    padding: 1em;
+    font-weight: bold;
+}
+
+.loc.loc-bc {  box-shadow: 5px 5px #4bc4e4; border: #4bc4e4 solid 4px; }
+
+.loc.loc-sc {  box-shadow: 5px 5px #f64322; border: #f64322 solid 4px; }
+
+.loc.loc-yt {  box-shadow: 5px 5px red; border: red solid 4px; }
+
+.loc.loc-spot {  box-shadow: 5px 5px #1DB954; border: #1DB954 solid 4px; }
+
+.loc.loc-apple {  box-shadow: 5px 5px #fb3e57; border: #fb3e57 solid 4px; }
+
+.loc:hover {
+    box-shadow: -5px -5px;
 }
