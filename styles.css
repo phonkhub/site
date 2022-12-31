@@ -146,6 +146,11 @@ label {
     color: black;
 }
 
+#artists {
+    overflow: scroll;
+    height: calc(100% - 92px - 1em);
+}
+
 #members .artist {
     text-align: center;
 }
