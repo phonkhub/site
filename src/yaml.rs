@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, Duration};
 use serde::{Deserialize, de::Visitor};
 
-use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location, Wave, Sample}, parse_name, str_to_duration};
+use crate::{types::music::{Artist, CollectiveMember, Album, Track, TrackArtist, Location, Wave, Sample, SampleOccurance, TrackSample}, parse_name, str_to_duration};
 use std::{io::Error, fs::{read_dir, DirEntry}, collections::{HashMap, HashSet}, hash::Hash, mem, f32::consts::E};
 use itertools::Itertools;
 
@@ -155,6 +155,10 @@ impl Data {
         }
         result
     }
+    
+    pub fn get_sample(&self, id_sample: &str) -> Option<Sample> {
+        None
+    }
 }
 
 
@@ -218,11 +222,16 @@ pub struct YamlLocation {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct YamlSample {
-    pub artist: String,
-    pub name: String,
+    pub id: String,
     pub r#type: String,
-    // from: Option<String>,
-    // to: Option<String>,
+    pub occurs: Vec<YamlSampleOccurance>
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct YamlSampleOccurance {
+    from: String,
+    to: String,
+    at: String,
 }
 
 // #[derive(Debug, Clone)]
@@ -393,10 +402,17 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
     let samples = if let Some(samples) = &yaml.sample {
         samples
             .iter()
-            .map(|sample| Sample {
-                artist: sample.artist.clone(),
-                name: sample.name.clone(),
-                r#type: sample.r#type.clone() })
+            .map(|sample| TrackSample {
+                id: sample.id.clone(),
+                r#type: sample.r#type.clone(),
+                occurances: sample.occurs
+                    .iter()
+                    .map(|occurs| SampleOccurance {
+                        from: str_to_duration(&occurs.from),
+                        to: if occurs.to == "end" { duration.unwrap() } else { str_to_duration(&occurs.to) },
+                        at: str_to_duration(&occurs.at),
+                    })
+                    .collect(), })
             .collect()
     } else { vec![] };
 

@@ -33,7 +33,23 @@ else %} {% let time = String::new() %} {% endif %}
 <br />
 <br />
 <br />
+{% if track.samples.len() > 0 %}
+<div id="sample-container">
+    {% for sample in track.samples %}
 
+    <div id="sample-layer">
+        {% for occurance in sample.occurances %} {% let (width, left) =
+        crate::calc_sample_pos(track, occurance) %}
+        <div
+            style="width: {{ width }}%; left: {{ left }}%"
+            class="sample-occurance sample-type-{{ sample.type }}"
+        ></div>
+        {% endfor %}
+    </div>
+
+    {% endfor %}
+</div>
+{% endif %}
 <canvas id="wave" width="600" height="64"></canvas>
 
 <script>
@@ -63,8 +79,6 @@ else %} {% let time = String::new() %} {% endif %}
 <div>
     {% for sample in track.samples %}
 
-    <div>({{ sample.type }}) {{ sample.artist }} - {{ sample.name }}</div>
-
-    {% endfor %}
+    <div>{% call album_macros::sample(sample.id) %}</div> {% endfor %}</div>
+    {% endif %} {% include "./partials/footer.html" %} {% endblock %}
 </div>
-{% endif %} {% include "./partials/footer.html" %} {% endblock %}

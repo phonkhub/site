@@ -1,7 +1,7 @@
-use std::hash;
+use std::{hash, ops::Mul};
 use chrono::Duration;
 use md5;
-use types::music::{Artist, Wave};
+use types::music::{Artist, Wave, Track, SampleOccurance};
 
 pub mod types;
 pub mod yaml;
@@ -78,4 +78,17 @@ pub fn duration_to_str(duration: &Duration) -> String {
     let min = duration.num_minutes();
     let sec = duration.num_seconds() - min * 60;
     format!("#t={}%3A{}", min, sec)
+}
+
+pub fn calc_sample_pos(track: &Track, occurance: &SampleOccurance) -> (f32, f32) {
+    let duration = occurance.to - occurance.from;
+    let duration_seconds_sample = duration.num_seconds() as f32;
+    let duration_seconds_track = track.duration.unwrap().num_seconds() as f32;
+    let percent = duration_seconds_sample / duration_seconds_track;
+    let width = (percent * 100 as f32);
+
+    let percent_from = occurance.from.num_seconds() as f32 / duration_seconds_track;
+    let left = (percent_from * 100 as f32);
+
+    (width, left)
 }

@@ -75,8 +75,17 @@ pub struct Track {
     pub duration: Option<Duration>,
     pub artists: Vec<TrackArtist>,
     pub locations: Vec<Location>,
-    pub samples: Vec<Sample>,
+    pub samples: Vec<TrackSample>,
     pub wave: Option<Wave>,
+}
+
+pub struct Sample {
+    pub id: String,
+    pub media: SampleMedia,
+}
+
+pub enum SampleMedia {
+    Song(Track),
 }
 
 const URL_BANDCAMP: &str = "bandcamp.com";
@@ -118,10 +127,17 @@ pub struct Location {
 }
 
 #[derive(Debug, Clone)]
-pub struct Sample {
-    pub artist: String,
-    pub name: String,
+pub struct TrackSample {
+    pub id: String,
     pub r#type: String,
+    pub occurances: Vec<SampleOccurance>,
+}
+
+#[derive(Debug, Clone)]
+pub struct SampleOccurance {
+    pub from: Duration,
+    pub to: Duration,
+    pub at: Duration,
 }
 
 #[derive(Debug, Clone)]
