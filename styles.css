@@ -147,7 +147,7 @@ label {
 }
 
 #artists {
-    overflow: scroll;
+    overflow-y: scroll;
     height: calc(100% - 92px - 1em);
 }
 
@@ -173,4 +173,29 @@ label {
 
 .loc:hover {
     box-shadow: -5px -5px;
+}
+
+#sample-container {
+    position: absolute;
+    height: 64px;
+    width: 600px;
+}
+
+#sample-layer {
+    position: absolute;
+    opacity: .5;
+    width: 100%;
+    height: 100%;
+}
+
+.sample-occurance {
+    height: 100%;
+    position: absolute;
+}
+
+.sample-occurance.sample-type-beat {
+    background: blue;
+}
+.sample-occurance.sample-type-vocals {
+    background: red;
 }
