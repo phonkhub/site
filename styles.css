@@ -151,6 +151,11 @@ label {
     height: calc(100% - 92px - 1em);
 }
 
+#discs {
+    overflow-y: scroll;
+    height: 100vh;
+}
+
 #members .artist {
     text-align: center;
 }
@@ -198,4 +203,8 @@ label {
 }
 .sample-occurance.sample-type-vocals {
     background: red;
+}
+
+#album_container {
+    display: flex;
 }
