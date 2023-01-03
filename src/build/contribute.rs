@@ -20,6 +20,7 @@ pub fn build_contribute(path: &str, data: &Data) -> Result<(), Error> {
         id_artist: None,
         id_album: None,
         id_track: None,
+        meta: None,
     };
     let template = TemplateContributing { page, data };
     let content = template.render().unwrap();

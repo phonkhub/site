@@ -22,6 +22,7 @@ pub fn build_artists(path: &str, data: &Data) -> Result<(), Error> {
         id_artist: None,
         id_album: None,
         id_track: None,
+        meta: None,
     };
     let template = TemplateArtists {
         page,

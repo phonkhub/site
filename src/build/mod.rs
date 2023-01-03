@@ -58,4 +58,15 @@ pub struct Page {
     id_album: Option<String>,
     id_track: Option<String>,
     title: Option<String>,
+    meta: Option<Meta>
 }
+
+pub struct Meta {
+    pub title: String,
+    pub url: String,
+    pub r#type: String,
+    pub image: String,
+}
+
+pub const META_TYPE_SONG: &str = "music.song";
+pub const META_TYPE_ALBUM: &str = "music.album";

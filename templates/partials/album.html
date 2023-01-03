@@ -56,8 +56,8 @@ data.get_album_artist_ids(album_id) %}
     {% endif %}
 </a>
 
-{%- endmacro -%} {% macro sample(id_sample) %} {% if let Some(sample) =
-data.get_sample(id_sample) %}
+{%- endmacro -%} {% macro sample(track_sample) %} {% if let Some(sample) =
+data.get_sample(track_sample.id) %}
 
 <a
     class="artist-name artist-name-{{ sample.id }}"
@@ -70,7 +70,8 @@ data.get_sample(id_sample) %}
     title="Click to add artist data"
     style="color: red"
     target="_blank"
-    href="https://github.com/phonkhub/db/new/main/samples/?filename=samples/{{ id_sample }}.yml"
-    >{{ id_sample }}</a
+    href="https://github.com/phonkhub/db/new/main/samples/?filename=samples/{{ track_sample.id }}.yml"
+    >({{ track_sample.media }}) {{ track_sample.artist }}: {{ track_sample.name
+    }}</a
 >
 {% endif %} {% endmacro %}

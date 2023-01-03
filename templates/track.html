@@ -61,12 +61,13 @@ else %} {% let time = String::new() %} {% endif %}
 
     ctx.strokeStyle = "white";
 
-    let scale = 3;
+    let scale_x = 3;
+    let scale_y = 4;
 
     for (let i = 0; i < width; i++) {
         ctx.beginPath();
         ctx.moveTo(i, height);
-        ctx.lineTo(i, height - wave[i * scale] / 4);
+        ctx.lineTo(i, height - wave[i * scale_x] / scale_y);
         ctx.stroke();
     }
 </script>
@@ -79,6 +80,6 @@ else %} {% let time = String::new() %} {% endif %}
 <div>
     {% for sample in track.samples %}
 
-    <div>{% call album_macros::sample(sample.id) %}</div> {% endfor %}</div>
+    <div>{% call album_macros::sample(sample) %}</div> {% endfor %}</div>
     {% endif %} {% include "./partials/footer.html" %} {% endblock %}
 </div>

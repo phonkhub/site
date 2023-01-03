@@ -8,11 +8,21 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {% if let Some(title) = page.title %}
-        <title>PhonkHub | {{ title }}</title>
+        <title>{{ title }}</title>
         {% else %}
         <title>PhonkHub</title>
-        {% endif %}
+        {% endif %} {% if let Some(meta) = page.meta %}
+        <meta property="og:title" content="{{ meta.title }}" />
+        <meta property="og:type" content="{{ meta.type }}" />
+        <meta property="og:url" content="{{ meta.url.replace("./out/", url_root)
+        }}" />
+        <meta property="og:image" content="{{ meta.image }}" />
+
+        <link rel="icon" type="image/x-icon" href="{{ meta.image }}" />
+        {% else %}
         <link rel="icon" type="image/x-icon" href="{{ url_root }}favicon.ico" />
+        {% endif %}
+
         <style>
             @font-face {
                 font-family: phont;

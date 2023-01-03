@@ -4,7 +4,7 @@ use askama::Template;
 
 use crate::{yaml::Data, types::music::{Album, Track, Artist}};
 
-use super::{template_write, Page};
+use super::{template_write, Page, Meta, META_TYPE_SONG, META_TYPE_ALBUM};
 
 #[derive(Template)]
 #[template(path = "album.html")]
@@ -26,8 +26,10 @@ pub fn build_album(path: &str, data: &Data, album: &Album) -> Result<(), Error> 
     let id_artist = Some(artist_id.clone());
     let id_album = Some(album.id.clone());
     let artist = &data.get_artist(&artist_id).unwrap();
-    let title = Some(album.name.clone());
-    let page = Page { id_artist, id_album, id_track: None, title };
+    let album_title = &album.name;
+    let title = Some(album_title.to_owned());
+    let meta = Some(Meta { title: album_title.to_owned(), url: path_album, r#type: META_TYPE_ALBUM.to_owned(), image: album.cover_url.to_owned() });
+    let page = Page { id_artist, id_album, id_track: None, title, meta };
     let tracks = data.get_tracks_in_album(&album.id);
     let template = TemplateAlbum { page, data, artist, album, tracks };
     let content = template.render().unwrap();

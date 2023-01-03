@@ -48,6 +48,7 @@ pub fn build_artist(path: &str, data: &Data, id_artist: &str) -> Result<(), Erro
         id_artist: Some(id_artist.to_owned()),
         id_album: None,
         id_track: None,
+        meta: None,
     };
     let template = TemplateArtists {
         page,

@@ -129,6 +129,9 @@ pub struct Location {
 #[derive(Debug, Clone)]
 pub struct TrackSample {
     pub id: String,
+    pub media: String,
+    pub artist: String,
+    pub name: String,
     pub r#type: String,
     pub occurances: Vec<SampleOccurance>,
 }

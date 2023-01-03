@@ -222,7 +222,9 @@ pub struct YamlLocation {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct YamlSample {
-    pub id: String,
+    pub media: String,
+    pub artist: String,
+    pub name: String,
     pub r#type: String,
     pub occurs: Vec<YamlSampleOccurance>
 }
@@ -403,7 +405,10 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
         samples
             .iter()
             .map(|sample| TrackSample {
-                id: sample.id.clone(),
+                id: sample.name.clone(),
+                media: sample.media.clone(),
+                artist: sample.artist.clone(),
+                name: sample.name.clone(),
                 r#type: sample.r#type.clone(),
                 occurances: sample.occurs
                     .iter()
