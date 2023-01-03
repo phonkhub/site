@@ -353,7 +353,7 @@ fn read_albums(path: &str, data: &mut Data, id_artist: &str) -> Result<(), Error
             id: id_album.to_owned(),
             name: yaml.name,
             artist_id: id_artist.to_owned(),
-            genres: vec![],
+            genres: vec![yaml.genre],
             duration: Duration::seconds(0),
             released: yaml.released,
             cover_url: yaml.cover,

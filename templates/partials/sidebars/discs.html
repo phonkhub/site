@@ -1,32 +1,34 @@
 {% let albums = data.get_albums_by(artist.id) %} {% let features =
 data.get_features_by(artist.id) %}
-<label>albums:</label>
-<ul>
-    {% for album in albums %} {% let name_class %} {% if let Some(id_album) =
-    page.id_album %} {% if id_album.clone() == album.id %} {% let name_class =
-    "active" %} {% else %} {% let name_class = "none" %} {% endif %} {% else %}
-    {% let name_class = "none" %} {% endif %}
+<div id="discs">
+    <label>albums:</label>
+    <ul>
+        {% for album in albums %} {% let name_class %} {% if let Some(id_album)
+        = page.id_album %} {% if id_album.clone() == album.id %} {% let
+        name_class = "active" %} {% else %} {% let name_class = "none" %} {%
+        endif %} {% else %} {% let name_class = "none" %} {% endif %}
 
-    <li class="{{ name_class }}">
-        {% call album_macros::album_base(album.id) %}
-    </li>
-    <li>--</li>
-    {% endfor %}
-</ul>
+        <li class="{{ name_class }}">
+            {% call album_macros::album_base(album.id) %}
+        </li>
+        <li>--</li>
+        {% endfor %}
+    </ul>
 
-{% if features.len() > 0 %}
-<label>features:</label>
-<ul>
-    {% for (id_album, tracks) in features %} {% let name_class %} {% if let
-    Some(page_id_album) = page.id_album %} {% if page_id_album.clone() ==
-    id_album %} {% let name_class = "active" %} {% else %} {% let name_class =
-    "none" %} {% endif %} {% else %} {% let name_class = "none" %} {% endif %}
-    {% let album = data.get_album(id_album) %}
+    {% if features.len() > 0 %}
+    <label>features:</label>
+    <ul>
+        {% for (id_album, tracks) in features %} {% let name_class %} {% if let
+        Some(page_id_album) = page.id_album %} {% if page_id_album.clone() ==
+        id_album %} {% let name_class = "active" %} {% else %} {% let name_class
+        = "none" %} {% endif %} {% else %} {% let name_class = "none" %} {%
+        endif %} {% let album = data.get_album(id_album) %}
 
-    <li class="{{ name_class }}">
-        {% call album_macros::album_base(album.id) %}
-    </li>
-    <li>--</li>
-    {% endfor %}
-</ul>
-{% endif %}
+        <li class="{{ name_class }}">
+            {% call album_macros::album_base(album.id) %}
+        </li>
+        <li>--</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>

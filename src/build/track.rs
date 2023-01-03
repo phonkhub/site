@@ -31,7 +31,8 @@ pub fn build_track(path: &str, data: &Data, track: &Track) -> Result<(), Error> 
     let artist = &data.get_artist(&album.clone().artist_id).unwrap();
     let track_name = &track.name;
     let title = Some(track_name.to_owned() + " by " + &artist_name);
-    let meta = Some(Meta { title: track_name.to_owned(), url: path.clone(), r#type: META_TYPE_SONG.to_owned(), image: album.cover_url.clone() });
+    let description = "By ".to_owned() + &artist_name + " on " + &album.name;
+    let meta = Some(Meta { title: track_name.to_owned(), url: path.clone(), r#type: META_TYPE_SONG.to_owned(), image: album.cover_url.clone(), description });
     let page = Page { id_artist: Some(id_artist.to_owned()), id_album, title, id_track, meta };
     // let tracks = data.get_tracks_in_album(&album.id);
     let template = TemplateTrack { page, data, artist, album: &album, track };

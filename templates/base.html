@@ -11,12 +11,20 @@
         <title>{{ title }}</title>
         {% else %}
         <title>PhonkHub</title>
-        {% endif %} {% if let Some(meta) = page.meta %}
+        {% endif %}
+        <!-- Open graph metadata -->
+        <meta property="og:site_name" content="PhonkHub" />
+        {% if let Some(meta) = page.meta %}
         <meta property="og:title" content="{{ meta.title }}" />
         <meta property="og:type" content="{{ meta.type }}" />
         <meta property="og:url" content="{{ meta.url.replace("./out/", url_root)
         }}" />
         <meta property="og:image" content="{{ meta.image }}" />
+        <meta property="og:description" content="{{ meta.description }}" />
+        <!-- Twitter metadata -->
+        <meta property="twitter:title" content="{{ meta.title }}" />
+        <meta property="twitter:image" content="{{ meta.image }}" />
+        <meta property="twitter:description" content="{{ meta.description }}" />
 
         <link rel="icon" type="image/x-icon" href="{{ meta.image }}" />
         {% else %}

@@ -66,6 +66,7 @@ pub struct Meta {
     pub url: String,
     pub r#type: String,
     pub image: String,
+    pub description: String,
 }
 
 pub const META_TYPE_SONG: &str = "music.song";
