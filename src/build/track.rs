@@ -2,7 +2,7 @@ use std::{io::{Error}, fs::create_dir_all, collections::HashMap};
 
 use askama::Template;
 
-use crate::{yaml::Data, types::music::{Album, Track, Artist}};
+use crate::{yaml::Data, types::music::{Album, Track, Artist, Sample}};
 
 use super::{template_write, Page, Meta, META_TYPE_SONG};
 

@@ -1,19 +1,17 @@
 {%- import "./partials/album.html" as album_macros -%} {% extends "tracks.html"
 %} {% block content_album %}
 <div id="album_container">
-<img height="200px" src="{{ album.cover_url }}" />
-<div id="album_data">
-<label>album:</label>
-<a href="./"> <span>{{ album.name }}</span> </a>
-<br>
-<label>released:</label>
-<span>{{ album.released }}</span>
-<br>
-<label>genres:</label>
-<span>{{ album.genres.join(", ") }}</span>
-
-</div>
-
+    <img height="200px" src="{{ album.cover_url }}" />
+    <div id="album_data">
+        <label>album:</label>
+        <a href="./"> <span>{{ album.name }}</span> </a>
+        <br />
+        <label>released:</label>
+        <span>{{ album.released }}</span>
+        <br />
+        <label>genres:</label>
+        <span>{{ album.genres.join(", ") }}</span>
+    </div>
 </div>
 
 <h1>{{ track.name }}</h1>
@@ -42,12 +40,65 @@ else %} {% let time = String::new() %} {% endif %}
 <a target="_blank" href="{{ loc.url }}">
     <span class="loc loc-apple">apple</span>
 </a>
-{% endif %} {% if let Some(wave) = track.wave %}
+{% endif %}
 <br />
 <br />
 <br />
 <br />
-{% if track.samples.len() > 0 %}
+{% if let Some(wave) = track.wave %}
+
+<canvas id="wave" width="600" height="64"></canvas>
+
+<script>
+    let width = 600;
+    let height = 64;
+
+    let scale_x = 3;
+    let scale_y = 4;
+
+    let canvas = document.getElementById("wave");
+    let ctx = canvas.getContext("2d");
+    let wave = [{{ crate::wave_to_str(wave) }}];
+
+    let colors = [{{ crate::sample_to_colors(track.samples) }}]
+    let duration = {{ track.duration.unwrap().num_seconds() }};
+
+    function get_color(i) {
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        for (let c of colors) {
+            let j = i / width;
+            let starts = c.from / duration;
+            let ends = c.to / duration;
+
+            if (starts <= j && j < ends) {
+                r += c.color[0];
+                g += c.color[1];
+                b += c.color[2];
+            }
+        }
+        let color;
+        if (r + g + b == 0) {
+            color = `rgb(255, 255, 255)`;
+        } else {
+            color = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        return color;
+    }
+
+    for (let i = 0; i < width; i++) {
+        ctx.strokeStyle = get_color(i);
+
+        ctx.beginPath();
+        ctx.moveTo(i, height);
+        ctx.lineTo(i, height - wave[i * scale_x] / scale_y);
+        ctx.stroke();
+    }
+</script>
+
+{% endif %} {% if track.samples.len() > 0 %}
 <div id="sample-container">
     {% for sample in track.samples %}
 
@@ -63,37 +114,10 @@ else %} {% let time = String::new() %} {% endif %}
 
     {% endfor %}
 </div>
-{% endif %}
-<canvas id="wave" width="600" height="64"></canvas>
 
-<script>
-    let width = 600;
-    let height = 64;
-    let canvas = document.getElementById("wave");
-    let ctx = canvas.getContext("2d");
-    let wave = [{{ crate::wave_to_str(wave) }}];
-
-    ctx.strokeStyle = "white";
-
-    let scale_x = 3;
-    let scale_y = 4;
-
-    for (let i = 0; i < width; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i, height);
-        ctx.lineTo(i, height - wave[i * scale_x] / scale_y);
-        ctx.stroke();
-    }
-</script>
-
-{% endif %} {% if track.samples.len() > 0 %}
-<br />
-<br />
-<br />
-<label>samples:</label>
-<div>
-    {% for sample in track.samples %}
-
-    <div>{% call album_macros::sample(sample) %}</div> {% endfor %}</div>
-    {% endif %} {% include "./partials/footer.html" %} {% endblock %}
+<div id="sample-table">
+    {% for sample in track.samples %} {% call album_macros::sample(sample) %} {%
+    endfor %}
 </div>
+
+{% endif %} {% include "./partials/footer.html" %} {% endblock %}

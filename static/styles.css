@@ -181,16 +181,17 @@ label {
 }
 
 #sample-container {
-    position: absolute;
-    height: 64px;
+    position: relative;
+    height: 20px;
     width: 600px;
+    margin-top: -3px;
 }
 
 #sample-layer {
     position: absolute;
-    opacity: .5;
     width: 100%;
     height: 100%;
+    opacity: .3;
 }
 
 .sample-occurance {
@@ -203,6 +204,9 @@ label {
 }
 .sample-occurance.sample-type-vocals {
     background: red;
+}
+.sample-occurance:hover {
+    background: white;
 }
 
 #album_container {

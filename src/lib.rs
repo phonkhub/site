@@ -1,7 +1,9 @@
 use std::{hash, ops::Mul};
 use chrono::Duration;
+use itertools::Itertools;
 use md5;
-use types::music::{Artist, Wave, Track, SampleOccurance};
+use serde_json::{json, Value};
+use types::music::{Artist, Wave, Track, SampleOccurance, TrackSample};
 
 pub mod types;
 pub mod yaml;
@@ -34,6 +36,10 @@ pub struct Color {
 }
 
 impl Color {
+    fn new(r: u8, g: u8, b: u8) -> Self {
+        Color { r, g, b }
+    }
+
     fn hex(&self) -> String { format!("#{:02x?}{:02x?}{:02x?}", self.r, self.g, self.b) }
 }
 
@@ -91,4 +97,32 @@ pub fn calc_sample_pos(track: &Track, occurance: &SampleOccurance) -> (f32, f32)
     let left = (percent_from * 100 as f32);
 
     (width, left)
+}
+
+/// This should just serialize a vect of stucts but I couldn't get that working so we have this fn
+pub fn sample_to_colors(samples: &Vec<TrackSample>) -> String {
+    samples
+        .iter()
+        .flat_map(
+            |sample| sample.occurances
+                .iter()
+                .map(
+                    |occurs| {
+                        let color = get_sample_color(sample);
+                        let r = color.r;
+                        let g = color.g;
+                        let b = color.b;
+                        format!(r#"{{from: {}, to: {}, color: {}}}"#, occurs.from.num_seconds(), occurs.to.num_seconds(), format!("[{},{},{}]", r,g,b))
+                    }
+                    )
+        )
+        .join(",")
+}
+
+fn get_sample_color(sample: &TrackSample) -> Color {
+    match sample.r#type.as_str() {
+        "vocals" => Color::new(255, 0, 0),
+        "beat" => Color::new(0, 0, 255),
+        _ => Color::new(0, 0, 0)
+    }
 }

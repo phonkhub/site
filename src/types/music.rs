@@ -1,4 +1,6 @@
+use serde::Serialize;
 use chrono::{NaiveDate, Duration};
+use serde_with::{serde_as, DurationSeconds};
 
 #[derive(Debug, Clone)]
 pub struct Artist {
@@ -139,9 +141,12 @@ pub struct TrackSample {
 #[derive(Debug, Clone)]
 pub struct SampleOccurance {
     pub from: Duration,
+
     pub to: Duration,
+
     pub at: Duration,
 }
+
 
 #[derive(Debug, Clone)]
 pub struct Wave {
