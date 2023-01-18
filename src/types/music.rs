@@ -1,6 +1,5 @@
 use serde::Serialize;
 use chrono::{NaiveDate, Duration};
-use serde_with::{serde_as, DurationSeconds};
 
 #[derive(Debug, Clone)]
 pub struct Artist {
