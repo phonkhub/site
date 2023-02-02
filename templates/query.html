@@ -43,7 +43,7 @@ of the filters
 
     function fliter_add() {
         let q = get_query();
-        q.filters.push({ field: "name", cond: "eq", val: "" });
+        q.f.push({ field: "name", cond: "eq", val: "" });
         render_filters(q);
     }
 
@@ -114,9 +114,16 @@ of the filters
             let el_val = document.createElement("input");
             el_val.value = val;
 
+            let el_remove = document.createElement("button");
+            el_remove.innerText = "❌";
+            el_remove.addEventListener("click", () => {
+                el_remove.parentElement.remove();
+            });
+
             el_filter.appendChild(el_field);
             el_filter.appendChild(el_cond);
             el_filter.appendChild(el_val);
+            el_filter.appendChild(el_remove);
 
             el_filters.appendChild(el_filter);
         }
