@@ -35,7 +35,13 @@
         el_search.addEventListener("keydown", (ev) => {
             if (ev.keyCode == 13) {
                 let val = el_search.value;
-                let q = { f: [{ field: "name", cond: "contains", val }] };
+                let q = {
+                    j: "or",
+                    f: [
+                        { field: "name", cond: "contains", val },
+                        { field: "artist", cond: "contains", val },
+                    ],
+                };
                 let url = new URL("{{ url_root }}query.html");
                 let json = JSON.stringify(q);
                 url.searchParams.set("q", json);

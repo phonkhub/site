@@ -4,6 +4,13 @@
 <div id="filters"></div>
 <button id="filter-add">add filter</button>
 <br />
+Match
+<select id="filter-join">
+    <option value="or">any</option>
+    <option value="and">all</option>
+</select>
+of the filters
+<br />
 <button style="display: none" id="query">query</button>
 <div id="results-container" style="display: none">
     <h2>Results</h2>
@@ -29,19 +36,19 @@
     let button_filter_add = document.getElementById("filter-add");
 
     let el_filters = document.getElementById("filters");
+    let el_join_type = document.getElementById("filter-join");
     let el_button_query = document.getElementById("query");
     let el_query_container = document.getElementById("results-container");
     let el_results = document.getElementById("results");
 
     function fliter_add() {
-        let filters = get_filters();
-        filters.push({ field: "name", cond: "eq", val: "" });
-        render_filters({ f: filters });
+        let q = get_query();
+        q.filters.push({ field: "name", cond: "eq", val: "" });
+        render_filters(q);
     }
 
     function query_submit() {
-        let filters = get_filters();
-        let q = { f: filters };
+        let q = get_query();
         let url = new URL(document.location.href);
         let encoded = JSON.stringify(q);
         url.searchParams.set("q", encoded);
@@ -56,7 +63,7 @@
         return el;
     }
 
-    function get_filters() {
+    function get_query() {
         let el_filters = document.getElementsByClassName("filter");
         let filters = [];
         for (let filter of el_filters) {
@@ -74,12 +81,14 @@
                 val,
             });
         }
-        return filters;
+        return { f: filters, j: el_join_type.value };
     }
 
     function render_filters(query) {
         let filters = query.f;
         el_filters.innerHTML = "";
+
+        el_join_type.value = query.j;
 
         for (let filter of filters) {
             let field = filter.field;
@@ -154,12 +163,9 @@
 
     function track_match(track, query) {
         let filters = query.f;
-        for (let filter of filters) {
-            if (!track_filter_match(track, filter)) {
-                return false;
-            }
-        }
-        return true;
+        let res = filters.map((f) => track_filter_match(track, f));
+        let f = (t) => t;
+        return query.j == "and" ? res.every(f) : res.some(f);
     }
 
     function query_data(data, query) {
