@@ -6,6 +6,17 @@ body {
     margin: 0;
     height: 100vh;
 }
+:root {
+	--gradient-shadow: linear-gradient(
+		45deg,
+		#fb0094,
+		#0000ff,
+		#ff0000,
+		#fb0094,
+		#0000ff,
+		#ff0000
+	);
+}
 
 a {
     color: blueviolet;
@@ -211,4 +222,49 @@ label {
 
 #album_container {
     display: flex;
+}
+
+input#search {
+    padding: 1em;
+    background: black;
+    color: white;
+    outline: none;
+    border: none;
+    width: 100%;
+}
+.shadow {
+    width: 50%;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	color: #fff;
+	text-align: center;
+	background: linear-gradient(0deg, #000, #262626);
+}
+.shadow:before,
+.shadow:after {
+	content: "";
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	background: var(--gradient-shadow);
+	background-size: 400%;
+	width: calc(100% + 4px);
+	height: calc(100% + 4px);
+	z-index: -1;
+	animation: animate 20s linear infinite;
+}
+
+.shadow:after {
+	filter: blur(20px);
+}
+
+@keyframes animate {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: 300% 0;
+	}
 }

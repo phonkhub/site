@@ -86,10 +86,16 @@ pub fn duration_to_str(duration: &Duration) -> String {
     format!("#t={}%3A{}", min, sec)
 }
 
+pub fn duration_format(duration: &Duration) -> String {
+    let min = duration.num_minutes();
+    let sec = duration.num_seconds() - min * 60;
+    format!("{}:{:02}", min, sec)
+}
+
 pub fn calc_sample_pos(track: &Track, occurance: &SampleOccurance) -> (f32, f32) {
     let duration = occurance.to - occurance.from;
     let duration_seconds_sample = duration.num_seconds() as f32;
-    let duration_seconds_track = track.duration.unwrap().num_seconds() as f32;
+    let duration_seconds_track = track.duration.num_seconds() as f32;
     let percent = duration_seconds_sample / duration_seconds_track;
     let width = (percent * 100 as f32);
 

@@ -5,6 +5,7 @@ use crate::yaml::Data;
 
 use self::index::build_index;
 use self::contribute::build_contribute;
+use self::query::build_query;
 use self::artists::build_artists;
 use self::artist::build_artist;
 use self::album::build_album;
@@ -18,10 +19,12 @@ mod artist;
 mod countries;
 mod album;
 mod track;
+mod query;
 
 pub fn build(path: &str, data: &Data) -> Result<(), Error> {
     build_index(&path, &data)?;
     build_contribute(&path, &data)?;
+    build_query(&path, &data)?;
 
     let path_artists = path.to_owned() + "artists/";
     create_dir_all(&path_artists)?;

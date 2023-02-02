@@ -1,7 +1,23 @@
 {% extends "base.html" %} {% block content %}
 
 <div style="text-align: center">
-    <h1>Welcome to PhonkHub</h1>
+    <br />
+    <br />
+    <br />
+    <br />
+    <h1>Phonk<span style="background-color: blueviolet">Hub</span></h1>
+    <br />
+
+    <div class="shadow">
+        <input
+            autocomplete="off"
+            placeholder="Search song by name"
+            id="search"
+        />
+    </div>
+    <br />
+    <br />
+    <a href="query.html">advanced search</a>
 
     <p>
         There are {{ data.artists.len() }} artists, {{ data.albums.len() }}
@@ -12,4 +28,21 @@
         <a href="{{ url_root }}contribute.html">here</a>.
     </p>
 </div>
+<script>
+    (function () {
+        let el_search = document.getElementById("search");
+        el_search.addEventListener("keydown", (ev) => {
+            if (ev.keyCode == 13) {
+                let val = el_search.value;
+                let q = { f: [{ field: "name", cond: "contains", val }] };
+                let url = new URL("{{ url_root }}query.html");
+                let json = JSON.stringify(q);
+                url.searchParams.set("q", json);
+                document.location.href = url.href;
+            }
+        });
+
+        el_search.focus();
+    })();
+</script>
 {% include "./partials/footer.html" %} {% endblock %}

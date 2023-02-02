@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 use chrono::{NaiveDate, Duration};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Artist {
     pub id: String,
     pub name: String,
@@ -46,37 +46,63 @@ impl Album {
     pub fn url_apple(&self) -> Option<String> { self.url(URL_APPLE) }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CollectiveMember {
     pub id: String,
     pub joined: Option<NaiveDate>,
     pub left: Option<NaiveDate>,
 }
 
-#[derive(Debug, Clone)]
+
+pub fn serialize_dur<S>(
+    dt: &Duration, 
+    serializer: S
+) -> Result<S::Ok, S::Error> 
+where
+    S: Serializer {
+    dt.num_seconds().serialize(serializer)
+}
+
+pub fn serialize_dur_opt<S>(
+    dt: &Option<Duration>, 
+    serializer: S
+) -> Result<S::Ok, S::Error> 
+where
+    S: Serializer {
+    match dt {
+        Some(dur) => dur.num_seconds().serialize(serializer),
+        _ => unreachable!()
+    }
+}
+
+
+#[derive(Debug, Clone, Serialize)]
 pub struct Album {
     pub id: String,
     pub name: String,
     pub artist_id: String,
     pub genres: Vec<String>,
     pub released: NaiveDate,
+    #[serde(serialize_with = "serialize_dur")]
     pub duration: Duration,
     pub cover_url: String,
     pub track_count: u8,
     pub urls: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Track {
     pub id: String,
     pub name: String,
     pub position: u8,
     pub artist_id: String,
     pub album_id: String,
-    pub duration: Option<Duration>,
+    #[serde(serialize_with = "serialize_dur")]
+    pub duration: Duration,
     pub artists: Vec<TrackArtist>,
     pub locations: Vec<Location>,
     pub samples: Vec<TrackSample>,
+    #[serde(skip)]
     pub wave: Option<Wave>,
 }
 
@@ -115,19 +141,20 @@ impl Track {
     pub fn location_apple(&self) -> Option<Location> { self.location(URL_APPLE) }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TrackArtist {
     pub id: String,
     pub r#for: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Location {
     pub url: String,
+    #[serde(serialize_with = "serialize_dur_opt", skip_serializing_if = "Option::is_none")]
     pub at: Option<Duration>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TrackSample {
     pub id: String,
     pub media: String,
@@ -137,12 +164,13 @@ pub struct TrackSample {
     pub occurances: Vec<SampleOccurance>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SampleOccurance {
+    #[serde(serialize_with = "serialize_dur")]
     pub from: Duration,
-
+    #[serde(serialize_with = "serialize_dur")]
     pub to: Duration,
-
+    #[serde(serialize_with = "serialize_dur")]
     pub at: Duration,
 }
 

@@ -396,9 +396,12 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
         let at = if let Some(time) = &location.at { Some(str_to_duration(&time)) } else { None };
         Location { url, at, } 
     }).collect();
-    let duration = if let Some(time) = &yaml.duration { Some(str_to_duration(time)) } else {
-        None
+    let duration = if let Some(duration) = &yaml.duration {
+        str_to_duration(&duration)
+    } else {
+        panic!("Duration not found for: {}/{}/{}", album.artist_id, album.id, name)
     };
+    
     let position: u8 = position_str.parse().unwrap();
     let wave = if let Some(wave) = &yaml.wave { Some(wave.clone()) } else { None };
     let samples = if let Some(samples) = &yaml.sample {
@@ -414,7 +417,7 @@ fn read_track(data: &mut Data, album_id: &str, album: &Album, position_str: &str
                     .iter()
                     .map(|occurs| SampleOccurance {
                         from: str_to_duration(&occurs.from),
-                        to: if occurs.to == "end" { duration.unwrap() } else { str_to_duration(&occurs.to) },
+                        to: if occurs.to == "end" { duration } else { str_to_duration(&occurs.to) },
                         at: str_to_duration(&occurs.at),
                     })
                     .collect(), })

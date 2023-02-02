@@ -11,6 +11,9 @@
         <br />
         <label>genres:</label>
         <span>{{ album.genres.join(", ") }}</span>
+        <br />
+        <label>duration:</label>
+        <span>{{ crate::duration_format(track.duration) }}</span>
     </div>
 </div>
 
@@ -61,7 +64,7 @@ else %} {% let time = String::new() %} {% endif %}
     let wave = [{{ crate::wave_to_str(wave) }}];
 
     let colors = [{{ crate::sample_to_colors(track.samples) }}]
-    let duration = {{ track.duration.unwrap().num_seconds() }};
+    let duration = {{ track.duration.num_seconds() }};
 
     function get_color(i) {
         let r = 0;

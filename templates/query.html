@@ -1,0 +1,268 @@
+{% extends "base.html" %} {% block content %}
+<h1>Query</h1>
+
+<div id="filters"></div>
+<button id="filter-add">add filter</button>
+<br />
+<button style="display: none" id="query">query</button>
+<div id="results-container" style="display: none">
+    <h2>Results</h2>
+    <div id="results"></div>
+</div>
+
+<script>
+    // TODO: turn this back into a hash for better speeds
+    let data_str = "{{ json }}".replace(/&quot;/g, '"');
+    let data = JSON.parse(data_str);
+
+    function get_query_in_url() {
+        let search = document.location.search;
+        if (search == "") {
+            return null;
+        }
+        let param = search.split("?q=")[1];
+        let decoded = decodeURIComponent(param);
+        let json = JSON.parse(decoded);
+        return json;
+    }
+
+    let button_filter_add = document.getElementById("filter-add");
+
+    let el_filters = document.getElementById("filters");
+    let el_button_query = document.getElementById("query");
+    let el_query_container = document.getElementById("results-container");
+    let el_results = document.getElementById("results");
+
+    function fliter_add() {
+        let filters = get_filters();
+        filters.push({ field: "name", cond: "eq", val: "" });
+        render_filters({ f: filters });
+    }
+
+    function query_submit() {
+        let filters = get_filters();
+        let q = { f: filters };
+        let url = new URL(document.location.href);
+        let encoded = JSON.stringify(q);
+        url.searchParams.set("q", encoded);
+        let url_new = url.href;
+        document.location.href = url_new;
+    }
+
+    function Option(val, label) {
+        let el = document.createElement("option");
+        el.value = val;
+        el.innerText = label;
+        return el;
+    }
+
+    function get_filters() {
+        let el_filters = document.getElementsByClassName("filter");
+        let filters = [];
+        for (let filter of el_filters) {
+            let el_field = filter.childNodes[0];
+            let el_cond = filter.childNodes[1];
+            let el_val = filter.childNodes[2];
+
+            let field = el_field.value;
+            let cond = el_cond.value;
+            let val = el_val.value;
+
+            filters.push({
+                field,
+                cond,
+                val,
+            });
+        }
+        return filters;
+    }
+
+    function render_filters(query) {
+        let filters = query.f;
+        el_filters.innerHTML = "";
+
+        for (let filter of filters) {
+            let field = filter.field;
+            let cond = filter.cond;
+            let val = filter.val;
+
+            let el_filter = document.createElement("div");
+            el_filter.className = "filter";
+            let el_field = document.createElement("select");
+            el_field.appendChild(Option("name", "Song Name"));
+            el_field.appendChild(Option("artist", "Artist ID"));
+            el_field.value = field;
+
+            let el_cond = document.createElement("select");
+            el_cond.appendChild(Option("eq", "equals"));
+            el_cond.appendChild(Option("not_eq", "not equals"));
+            el_cond.appendChild(Option("contains", "contains"));
+            el_cond.appendChild(Option("starts", "starts with"));
+            el_cond.appendChild(Option("ends", "starts ends"));
+            el_cond.appendChild(Option("fuzzy", "fuzzy match"));
+            el_cond.value = cond;
+
+            let el_val = document.createElement("input");
+            el_val.value = val;
+
+            el_filter.appendChild(el_field);
+            el_filter.appendChild(el_cond);
+            el_filter.appendChild(el_val);
+
+            el_filters.appendChild(el_filter);
+        }
+        el_button_query.style = filters.length > 0 ? "" : "display: none";
+    }
+
+    function track_filter_match(track, filter) {
+        let field = filter.field;
+        let cond = filter.cond;
+        let val = filter.val.toLowerCase();
+
+        // let album = get_album(track.album_id);
+        // let artist = get_artist(track.artist_id);
+
+        let get_given = () => {
+            switch (field) {
+                case "name":
+                    return track.name.toLowerCase();
+                    break;
+                case "artist":
+                    return track.artist_id;
+            }
+        };
+        let given = get_given();
+
+        switch (cond) {
+            case "eq":
+                return given == val;
+                break;
+            case "not_eq":
+                return given != val;
+                break;
+            case "contains":
+                return given.includes(val);
+                break;
+            case "starts":
+                return given.startsWith(val);
+                break;
+            case "ends":
+                return given.endsWith(val);
+                break;
+        }
+    }
+
+    function track_match(track, query) {
+        let filters = query.f;
+        for (let filter of filters) {
+            if (!track_filter_match(track, filter)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function query_data(data, query) {
+        let matches = [];
+        for (let track of data.tracks) {
+            if (track_match(track, query)) {
+                matches.push(track);
+            }
+        }
+        return matches;
+    }
+
+    function matches_render(matches) {
+        let el = matches_create(matches);
+        el_results.append(el);
+    }
+
+    function get_album(id_album) {
+        for (let album of data.albums) {
+            if (album.id == id_album) {
+                return album;
+            }
+        }
+        return null;
+    }
+
+    function get_artist(id_artist) {
+        for (let artist of data.artists) {
+            if (artist.id == id_artist) {
+                return artist;
+            }
+        }
+        return null;
+    }
+
+    function matches_create(matches) {
+        if (matches.length == 0) {
+            let el = document.createElement("span");
+            el.innerText = "No matches!!";
+            el.style = "color: #f06";
+            return el;
+        }
+        let el_tracks = document.createElement("div");
+        for (let match of matches) {
+            let match_album = get_album(match.album_id);
+            let match_artist = get_artist(match.artist_id);
+
+            let el_anchor = document.createElement("a");
+            let el_track = document.createElement("div");
+
+            let url_artist = "{{ url_root }}" + `artists/${match.artist_id}/`;
+            let url_album = `${url_artist}${match.album_id}/`;
+            let url = url_album + `${match.id}.html`;
+            el_anchor.href = url;
+
+            let el_img = document.createElement("img");
+            el_img.height = 100;
+            el_img.src = match_album.cover_url;
+
+            let el_title = document.createElement("div");
+            el_title.innerText = match.name;
+
+            let el_artist = document.createElement("a");
+            el_artist.className = "artist-name artist-name-" + match.artist_id;
+            el_artist.href = url_artist;
+            el_artist.innerText = match_artist.name;
+
+            let el_album = document.createElement("a");
+            el_album.href = url_album;
+            el_album.innerText = " - " + match_album.name;
+
+            el_track.appendChild(el_img);
+            el_track.appendChild(el_title);
+            el_track.appendChild(el_artist);
+            el_track.appendChild(el_album);
+
+            el_anchor.appendChild(el_track);
+            el_tracks.appendChild(el_anchor);
+        }
+        return el_tracks;
+    }
+
+    button_filter_add.addEventListener("click", fliter_add);
+    el_button_query.addEventListener("click", query_submit);
+
+    function query_container_reveal() {
+        el_query_container.style = "none";
+    }
+
+    (function () {
+        let query = get_query_in_url();
+        if (query == null) {
+            console.log("query is null");
+            return;
+        }
+        query_container_reveal();
+
+        render_filters(query);
+
+        let matches = query_data(data, query);
+
+        matches_render(matches);
+    })();
+</script>
+
+{% endblock %}
