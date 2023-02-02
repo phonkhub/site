@@ -225,6 +225,7 @@ label {
 }
 
 input#search {
+    font-family: 'phont';
     padding: 1em;
     background: black;
     color: white;
