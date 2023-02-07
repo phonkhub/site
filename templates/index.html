@@ -40,6 +40,7 @@
                     f: [
                         { field: "name", cond: "contains", val },
                         { field: "artist", cond: "contains", val },
+                        { field: "artist_album", cond: "contains", val },
                     ],
                 };
                 let url = new URL("{{ url_root }}query.html");

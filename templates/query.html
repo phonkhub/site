@@ -19,7 +19,7 @@ of the filters
 
 <script>
     // TODO: turn this back into a hash for better speeds
-    let data_str = "{{ json }}".replace(/&quot;/g, '"');
+    let data_str = "{{ json }}".replace(/&quot;/g, '"').replace(/&#x27;/g, "'");
     let data = JSON.parse(data_str);
 
     function get_query_in_url() {
@@ -99,7 +99,9 @@ of the filters
             el_filter.className = "filter";
             let el_field = document.createElement("select");
             el_field.appendChild(Option("name", "Song Name"));
+            el_field.appendChild(Option("artist_album", "Album Artist ID"));
             el_field.appendChild(Option("artist", "Artist ID"));
+            el_field.appendChild(Option("is_collab", "Is Collab"));
             el_field.value = field;
 
             let el_cond = document.createElement("select");
@@ -143,14 +145,21 @@ of the filters
                 case "name":
                     return track.name.toLowerCase();
                     break;
-                case "artist":
+                case "artist_album":
                     return track.artist_id;
+                case "artist":
+                    return track.artists.map((artist) => artist.id);
+                case "is_collab":
+                    return track.artists.length > 1;
             }
         };
         let given = get_given();
 
         switch (cond) {
             case "eq":
+                if (Array.isArray(given)) {
+                    return given.some((n) => n == val);
+                }
                 return given == val;
                 break;
             case "not_eq":
@@ -218,13 +227,13 @@ of the filters
         let el_tracks = document.createElement("div");
         for (let match of matches) {
             let match_album = get_album(match.album_id);
-            let match_artist = get_artist(match.artist_id);
 
             let el_anchor = document.createElement("a");
             let el_track = document.createElement("div");
 
-            let url_artist = "{{ url_root }}" + `artists/${match.artist_id}/`;
-            let url_album = `${url_artist}${match.album_id}/`;
+            let url_artist_album =
+                "{{ url_root }}" + `artists/${match.artist_id}/`;
+            let url_album = `${url_artist_album}${match.album_id}/`;
             let url = url_album + `${match.id}.html`;
             el_anchor.href = url;
 
@@ -235,18 +244,33 @@ of the filters
             let el_title = document.createElement("div");
             el_title.innerText = match.name;
 
-            let el_artist = document.createElement("a");
-            el_artist.className = "artist-name artist-name-" + match.artist_id;
-            el_artist.href = url_artist;
-            el_artist.innerText = match_artist.name;
+            let el_artists = document.createElement("div");
+            for (let [i, artist] of match.artists.entries()) {
+                let el_artist = document.createElement("a");
+                el_artist.className = "artist-name artist-name-" + artist.id;
+                let url_artist = "{{ url_root }}" + `artists/${artist.id}/`;
+                el_artist.href = url_artist;
+
+                let match_artist = get_artist(artist.id);
+
+                el_artist.innerText =
+                    match_artist != null ? match_artist.name : artist.id;
+                el_artists.appendChild(el_artist);
+
+                if (i + 1 != match.artists.length) {
+                    let sep = document.createElement("span");
+                    sep.innerText = ", ";
+                    el_artists.appendChild(sep);
+                }
+            }
 
             let el_album = document.createElement("a");
             el_album.href = url_album;
-            el_album.innerText = " - " + match_album.name;
+            el_album.innerText = match_album.name;
 
             el_track.appendChild(el_img);
             el_track.appendChild(el_title);
-            el_track.appendChild(el_artist);
+            el_track.appendChild(el_artists);
             el_track.appendChild(el_album);
 
             el_anchor.appendChild(el_track);

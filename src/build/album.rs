@@ -4,7 +4,7 @@ use askama::Template;
 
 use crate::{yaml::Data, types::music::{Album, Track, Artist}};
 
-use super::{template_write, Page, Meta, META_TYPE_SONG, META_TYPE_ALBUM};
+use super::{template_write, Page, Meta, META_TYPE_ALBUM};
 
 #[derive(Template)]
 #[template(path = "album.html")]
